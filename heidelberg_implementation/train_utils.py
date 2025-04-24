@@ -12,7 +12,7 @@ import torch.nn as nn
 from IPython.display import clear_output
 
 
-def sparse_data_generator_from_hdf5_spikes(X, y, batch_size, nb_steps, nb_units, max_time, device, shuffle=True):
+def sparse_data_generator_from_hdf5_spikes(X, y, batch_size, nb_steps, nb_units, max_time, device, shuffle=False):
     """ This generator takes a spike dataset and generates spiking network input as sparse tensors. 
 
     Args:

@@ -50,7 +50,7 @@ if __name__ == "__main__":
                       lr=2e-4)
     
     print("Training done.")
-    print("Training accuracy: %.3f"%(compute_classification_accuracy(x_train,y_train)))
-    print("Test accuracy: %.3f"%(compute_classification_accuracy(x_test,y_test)))   
+    print("Training accuracy: %.3f"%(compute_classification_accuracy(x_train,y_train, batch_size=batch_size, nb_steps=nb_steps, nb_inputs=nb_inputs, max_time=max_time)))
+    print("Test accuracy: %.3f"%(compute_classification_accuracy(x_test,y_test, batch_size=batch_size, nb_steps=nb_steps, nb_inputs=nb_inputs, max_time=max_time)))   
 
 
