@@ -8,11 +8,26 @@ from train_utils import sparse_data_generator_from_hdf5_spikes
 from train_utils import get_train_test_data
 import torch
 from utils import get_device
+import numpy as np
+import matplotlib.pyplot as plt
+
+def save_loss_plot_png(loss_history):
+    plt.figure()
+    plt.plot(loss_history)
+    plt.xlabel("Index (Timestep)")
+    plt.ylabel("Value")
+    plt.title("Array Plot")
+    plt.grid(True)
+
+    plt.savefig("./simplified_loss_hist.png")
+    plt.close()
 
 time_steps = 100
 num_inputs = 700
 num_hidden = 1000
 num_outputs = 20
+dtype = torch.float
+batch_size = 32
 
 max_time = 1.4
 beta = 0.99
@@ -52,7 +67,7 @@ if __name__ == "__main__":
     x_train, y_train, x_test, y_test = get_train_test_data()    
 
     data_generator = list(sparse_data_generator_from_hdf5_spikes(x_train, y_train,
-                                       batch_size=1,
+                                       batch_size=batch_size,
                                        nb_steps=time_steps,
                                        nb_units=num_inputs,
                                        max_time=max_time,
@@ -62,37 +77,42 @@ if __name__ == "__main__":
     
     net = Net().to(device)
 
-    optimizer = torch.optim.Adam(net.parameters())
-    loss_fn = SF.mse_count_loss()
+    optimizer = torch.optim.Adam(net.parameters(), lr=5e-4, betas=(0.9, 0.999))
+    loss = nn.CrossEntropyLoss()
 
-    num_epochs = 30
+    num_epochs = 3
 
-    loss_hist = []
-    acc_hist = []
+    global_loss_hist = []
 
-    # training loop
-    print("start of training loop")
     for epoch in range(num_epochs):
+        print(f"Epoch: {epoch}")
+
         for i, (data, targets) in enumerate(data_generator):
-            data = data.to_dense().permute(1, 0, 2)
-            data = data.to(device)
+            loss_hist = []
+            acc_hist = []
+
+            data = data.to_dense().permute(1, 0, 2).to(device)
             targets = targets.to(device)
 
+            spk_rec, mem_rec = net.forward(data)
+            loss_val = torch.zeros((1), dtype=dtype, device=device)
 
-            net.train()
-            spk_rec, _ = net.forward(data)
-            loss_val = loss_fn(spk_rec, targets)
+            # sum loss at every step
+            for step in range(time_steps):
+                loss_val += loss(mem_rec[step], targets)
 
             # Gradient calculation + weight update
             optimizer.zero_grad()
             loss_val.backward()
             optimizer.step()
 
-            # Store loss history for future plotting
-            loss_hist.append(loss_val.item())
-
-            print(f"Epoch {epoch}, Iteration {i} \nTrain Loss: {loss_val.item():.2f}")
-
             acc = SF.accuracy_rate(spk_rec, targets)
+
+            global_loss_hist.append(loss_val.item())
+            loss_hist.append(loss_val.item())
             acc_hist.append(acc)
-            print(f"Accuracy: {acc * 100:.2f}%\n")
+            
+        print(f"average loss {np.array(loss_hist).mean()}")
+        print(f"average accuracy {np.array(acc_hist).mean()}")
+
+    save_loss_plot_png(global_loss_hist)
