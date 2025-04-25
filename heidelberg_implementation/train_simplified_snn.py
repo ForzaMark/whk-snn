@@ -4,23 +4,11 @@ from snntorch import functional as SF
 from snntorch import spikeplot as splt
 from snntorch import utils
 import torch.nn as nn
-from train_utils import sparse_data_generator_from_hdf5_spikes
-from train_utils import get_train_test_data
+from utils import sparse_data_generator_from_hdf5_spikes, get_train_test_data, save_history_plot
 import torch
 from utils import get_device
 import numpy as np
 import matplotlib.pyplot as plt
-
-def save_loss_plot_png(loss_history):
-    plt.figure()
-    plt.plot(loss_history)
-    plt.xlabel("Index (Timestep)")
-    plt.ylabel("Value")
-    plt.title("Array Plot")
-    plt.grid(True)
-
-    plt.savefig("./simplified_loss_hist.png")
-    plt.close()
 
 time_steps = 100
 num_inputs = 700
@@ -83,6 +71,7 @@ if __name__ == "__main__":
     num_epochs = 3
 
     global_loss_hist = []
+    global_acc_hist = []
 
     for epoch in range(num_epochs):
         print(f"Epoch: {epoch}")
@@ -109,10 +98,12 @@ if __name__ == "__main__":
             acc = SF.accuracy_rate(spk_rec, targets)
 
             global_loss_hist.append(loss_val.item())
+            global_acc_hist.append(acc)
             loss_hist.append(loss_val.item())
             acc_hist.append(acc)
             
         print(f"average loss {np.array(loss_hist).mean()}")
         print(f"average accuracy {np.array(acc_hist).mean()}")
 
-    save_loss_plot_png(global_loss_hist)
+    save_history_plot(global_loss_hist, name='simplified_loss')
+    save_history_plot(global_acc_hist, name='simplified_accuracy')

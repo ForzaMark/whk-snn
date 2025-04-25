@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 from utils import get_device
-from train_utils import (get_train_test_data, 
+from utils import (get_train_test_data, 
                         sparse_data_generator_from_hdf5_spikes)
 
 from sklearn.svm import SVC

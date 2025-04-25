@@ -1,7 +1,6 @@
 import numpy as np
 import torch
-from utils import get_device
-from train_utils import train, compute_classification_accuracy, get_train_test_data, get_weights
+from utils import train, compute_classification_accuracy, get_train_test_data, get_weights, get_device, save_history_plot
 
 # The coarse network structure and the time steps are dicated by the SHD dataset. 
 nb_inputs  = 700
@@ -22,7 +21,7 @@ alpha   = float(np.exp(-time_step/tau_syn))
 beta    = float(np.exp(-time_step/tau_mem))
 
 device = get_device()
-nb_epochs = 30
+nb_epochs = 1
 
 if __name__ == "__main__":
     x_train, y_train, x_test, y_test = get_train_test_data()    
@@ -49,8 +48,7 @@ if __name__ == "__main__":
                       max_time=max_time,
                       lr=2e-4)
     
+    save_history_plot(loss_hist, name='zenker_loss')
     print("Training done.")
-    print("Training accuracy: %.3f"%(compute_classification_accuracy(x_train,y_train, batch_size=batch_size, nb_steps=nb_steps, nb_inputs=nb_inputs, max_time=max_time)))
-    print("Test accuracy: %.3f"%(compute_classification_accuracy(x_test,y_test, batch_size=batch_size, nb_steps=nb_steps, nb_inputs=nb_inputs, max_time=max_time)))   
-
-
+    print("Training accuracy: %.3f"%(compute_classification_accuracy(x_train,y_train, batch_size=batch_size, nb_steps=nb_steps, nb_inputs=nb_inputs, max_time=max_time, device=device, nb_hidden=nb_hidden, nb_outputs=nb_outputs, dtype=dtype, alpha=alpha, beta=beta, weights=weights)))
+    print("Test accuracy: %.3f"%(compute_classification_accuracy(x_test,y_test, batch_size=batch_size, nb_steps=nb_steps, nb_inputs=nb_inputs, max_time=max_time, device=device, nb_hidden=nb_hidden, nb_outputs=nb_outputs, dtype=dtype, alpha=alpha, beta=beta, weights=weights)))   
