@@ -6,6 +6,8 @@ from utils import (get_train_test_data,
 
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
+from torch.utils.data import DataLoader
+from tonic import datasets, transforms
 
 def create_svm_data_representation(data_generator):
     X = []
@@ -13,7 +15,7 @@ def create_svm_data_representation(data_generator):
 
     for x,y in data_generator:
         sample_vector = []
-        x_dense = x.to_dense()[0]
+        x_dense = x.squeeze().to_dense()
 
         for neuron in range(number_input_neurons):
             summed = x_dense[:, neuron].sum().item()
@@ -34,34 +36,27 @@ max_time = 1.4
 device = get_device()
 nb_epochs = 3
 
-if __name__ == "__main__":
-    x_train, y_train, x_test, y_test = get_train_test_data()    
+frame_transform = transforms.ToFrame(
+    sensor_size=datasets.SHD.sensor_size,  
+    n_time_bins=number_time_steps
+)
 
-    train_data_generator = sparse_data_generator_from_hdf5_spikes(x_train, y_train,
-                                       batch_size=1,
-                                       nb_steps=number_time_steps,
-                                       nb_units=number_input_neurons,
-                                       max_time=max_time,
-                                       device=device)
+if __name__ == "__main__":
+    train_data = datasets.SHD("./data", transform=frame_transform, train=True)
+    test_data = datasets.SHD("./data", transform=frame_transform, train=False)
     
-    test_data_generator = sparse_data_generator_from_hdf5_spikes(x_test, y_test,
-                                       batch_size=1,
-                                       nb_steps=number_time_steps,
-                                       nb_units=number_input_neurons,
-                                       max_time=max_time,
-                                       device=device)
-    
-    print('create train data')
-    X_svm_train_data, y_svm_train_data = create_svm_data_representation(train_data_generator)
-    
-    print('create test data')
-    X_svm_test_data, y_svm_test_data = create_svm_data_representation(test_data_generator)
+    print('prepare data')
+    train_data_loader = DataLoader(train_data, shuffle=False, batch_size=1)
+    test_data_loader = DataLoader(test_data, shuffle=False, batch_size=1)
+
+    x_train, y_train = create_svm_data_representation(train_data_loader)
+    x_test, y_test = create_svm_data_representation(test_data_loader)
 
     print('classification')
     clf = SVC()
-    clf.fit(X_svm_train_data, y_svm_train_data)
+    clf.fit(x_train, y_train)
 
-    y_pred = clf.predict(X_svm_test_data)
-    accuracy = accuracy_score(y_svm_test_data, y_pred)
+    y_pred = clf.predict(x_test)
+    accuracy = accuracy_score(y_test, y_pred)
 
     print(f"Accuracy: {accuracy:.2f}")
