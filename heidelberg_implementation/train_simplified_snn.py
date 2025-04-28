@@ -94,7 +94,7 @@ if __name__ == "__main__":
     optimizer = torch.optim.Adam(net.parameters(), lr=5e-4, betas=(0.9, 0.999))
     loss = nn.CrossEntropyLoss()
 
-    num_epochs = 1
+    num_epochs = 30
 
     global_loss_hist = []
     global_acc_hist = []
