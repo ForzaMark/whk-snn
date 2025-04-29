@@ -1,3 +1,3 @@
-Epochs = 30
-Training Accuracy = 72%
-Test Accuracy = 55.7%
+Epochs = 50
+Training Accuracy = 81%
+Test Accuracy = 59.1%

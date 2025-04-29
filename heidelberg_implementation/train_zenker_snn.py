@@ -21,7 +21,7 @@ alpha   = float(np.exp(-time_step/tau_syn))
 beta    = float(np.exp(-time_step/tau_mem))
 
 device = get_device()
-nb_epochs = 30
+nb_epochs = 50
 
 if __name__ == "__main__":
     x_train, y_train, x_test, y_test = get_train_test_data()    
