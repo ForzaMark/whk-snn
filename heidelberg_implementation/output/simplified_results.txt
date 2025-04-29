@@ -1,5 +1,5 @@
 
-        Epochs = 1
-        Training Accuracy = 21.43%
-        Test Accuracy = 44.92%
+        Epochs = 30
+        Training Accuracy = 92.86%
+        Test Accuracy = 59.67%
     
