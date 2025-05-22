@@ -27,11 +27,11 @@ def compute_test_set_accuracy(test_data_generator, net):
 
     return 100 * correct / total
 
-def calculate_loss_over_all_timesteps(time_steps, mem_rec, targets, loss):
+def calculate_loss_over_all_timesteps(time_steps, mem_rec, targets, loss_function):
     loss_val = torch.zeros((1), dtype=dtype, device=device)
 
     for step in range(time_steps):
-        loss_val += loss(mem_rec[step], targets)
+        loss_val += loss_function(mem_rec[step], targets)
 
     return loss_val
 
@@ -58,6 +58,8 @@ frame_transform = transforms.ToFrame(
     n_time_bins=time_steps
 )
 
+LOSS_FUNCTION = nn.CrossEntropyLoss()
+
 if __name__ == "__main__":
     print('prepare data')
 
@@ -70,7 +72,6 @@ if __name__ == "__main__":
     net = SingleHiddenLayer1000NeuronsNet(num_inputs=num_inputs, num_outputs=num_outputs, beta=beta, time_steps=time_steps).to(device)
 
     optimizer = torch.optim.Adam(net.parameters(), lr=5e-4, betas=(0.9, 0.999))
-    loss = nn.CrossEntropyLoss()
 
     num_epochs = 30
 
@@ -89,7 +90,7 @@ if __name__ == "__main__":
 
             spk_rec, mem_rec = net(data)
 
-            loss_val = calculate_loss_over_all_timesteps(time_steps, mem_rec, targets, loss)
+            loss_val = calculate_loss_over_all_timesteps(time_steps, mem_rec, targets, LOSS_FUNCTION)
 
             calculate_gradient(optimizer=optimizer, loss_val=loss_val)
             update_weights(optimizer=optimizer)
