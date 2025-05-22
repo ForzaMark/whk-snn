@@ -16,6 +16,12 @@ class SingleHiddenLayer1000NeuronsNet(nn.Module):
         self.fc2 = nn.Linear(num_hidden, num_outputs)
         self.lif2 = snn.Leaky(beta=beta)
 
+        with torch.no_grad():
+            for name, param in self.named_parameters():
+                if "weight" in name:
+                    mask = (torch.rand_like(param) > sparsity).float()
+                    param.mul_(mask)
+
     def forward(self, x):
 
         # Initialize hidden states at t=0

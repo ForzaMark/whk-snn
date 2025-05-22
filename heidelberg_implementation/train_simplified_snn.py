@@ -7,6 +7,8 @@ import numpy as np
 from torch.utils.data import DataLoader
 from tonic import datasets, transforms
 from single_hidden_layer_1000_neurons_net import SingleHiddenLayer1000NeuronsNet
+import json
+from datetime import datetime
 
 def compute_test_set_accuracy(test_data_generator, net):
     total = 0
@@ -60,23 +62,19 @@ frame_transform = transforms.ToFrame(
 
 LOSS_FUNCTION = nn.CrossEntropyLoss()
 
-if __name__ == "__main__":
-    print('prepare data')
-
+def train_simplified_snn(net, num_epochs, save_model=False, sparsity=0, output_file_path='output/simplified_results.json'):
     train_data = datasets.SHD("./data", transform=frame_transform, train=True)
     test_data = datasets.SHD("./data", transform=frame_transform, train=False)
     
     train_data_loader = DataLoader(train_data, shuffle=False, batch_size=batch_size)
     test_data_loader = DataLoader(test_data, shuffle=False, batch_size=batch_size)
     
-    net = SingleHiddenLayer1000NeuronsNet(num_inputs=num_inputs, num_outputs=num_outputs, beta=beta, time_steps=time_steps).to(device)
-
     optimizer = torch.optim.Adam(net.parameters(), lr=5e-4, betas=(0.9, 0.999))
-
-    num_epochs = 30
 
     global_loss_hist = []
     global_acc_hist = []
+
+    start = datetime.now()
 
     for epoch in range(num_epochs):
         print(f"Epoch: {epoch}")
@@ -104,18 +102,29 @@ if __name__ == "__main__":
         global_loss_hist.append(loss_val.item())
         global_acc_hist.append(np.array(acc_hist).mean())
 
+    end = datetime.now()
+    time_diff = end - start
+
     save_history_plot(global_loss_hist, name='simplified_loss')
     save_history_plot(global_acc_hist, name='simplified_accuracy')
 
     test_set_accuracy = compute_test_set_accuracy(test_data_loader, net)
-    output = f"""
-        Epochs = {num_epochs}
-        Training Accuracy = {global_acc_hist[len(global_acc_hist) - 1]*100:.2f}%
-        Test Accuracy = {test_set_accuracy:.2f}%
-    """
 
-    torch.save(net.state_dict(), f'./models/{num_epochs}_epochs_simplified.pth')
+    data = {
+        'epochs': num_epochs,
+        'training_accuracy': global_acc_hist[len(global_acc_hist) - 1],
+        'test_accuracy': test_set_accuracy,
+        'sparsity': sparsity,
+        'time':  time_diff.total_seconds()
+    }
 
-    with open("output/simplified_results.txt", "w") as file:
-        file.write(output)
+    if save_model:
+        torch.save(net.state_dict(), f'./models/{num_epochs}_epochs_simplified.pth')
+
+    with open(output_file_path, "w") as file:
+        json.dump(data, file, indent=4) 
     
+if __name__ == '__main__':
+    net = SingleHiddenLayer1000NeuronsNet(num_inputs=num_inputs, num_outputs=num_outputs, beta=beta, time_steps=time_steps, sparsity=0).to(device)
+
+    train_simplified_snn(net, 30)
