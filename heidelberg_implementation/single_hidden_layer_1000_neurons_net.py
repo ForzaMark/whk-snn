@@ -5,7 +5,7 @@ import torch
 num_hidden = 1000
 
 class SingleHiddenLayer1000NeuronsNet(nn.Module):
-    def __init__(self, num_inputs, num_outputs, beta, time_steps):
+    def __init__(self, num_inputs, num_outputs, beta, time_steps, sparsity):
         super().__init__()
 
         self.time_steps = time_steps
