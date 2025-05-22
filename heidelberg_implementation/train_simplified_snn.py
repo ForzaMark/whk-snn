@@ -113,6 +113,9 @@ if __name__ == "__main__":
         Training Accuracy = {global_acc_hist[len(global_acc_hist) - 1]*100:.2f}%
         Test Accuracy = {test_set_accuracy:.2f}%
     """
+
+    torch.save(net.state_dict(), f'./models/{num_epochs}_epochs_simplified.pth')
+
     with open("output/simplified_results.txt", "w") as file:
         file.write(output)
     
