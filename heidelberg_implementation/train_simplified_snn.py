@@ -62,7 +62,7 @@ frame_transform = transforms.ToFrame(
 
 LOSS_FUNCTION = nn.CrossEntropyLoss()
 
-def train_simplified_snn(net, num_epochs, save_model=False, sparsity=0, output_file_path='output/simplified_results.json'):
+def train_simplified_snn(net, num_epochs, save_model=False, additional_output_information={}, output_file_path='output/simplified_results.json'):
     train_data = datasets.SHD("./data", transform=frame_transform, train=True)
     test_data = datasets.SHD("./data", transform=frame_transform, train=False)
     
@@ -114,8 +114,8 @@ def train_simplified_snn(net, num_epochs, save_model=False, sparsity=0, output_f
         'epochs': num_epochs,
         'training_accuracy': global_acc_hist[len(global_acc_hist) - 1],
         'test_accuracy': test_set_accuracy,
-        'sparsity': sparsity,
-        'time':  time_diff.total_seconds()
+        'time':  time_diff.total_seconds(),
+        **additional_output_information
     }
 
     if save_model:

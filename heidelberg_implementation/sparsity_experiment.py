@@ -29,7 +29,9 @@ if __name__ == '__main__':
         
         count_nonzero_weights(net)
 
-        train_simplified_snn(net, num_epochs=30, sparsity=sparsity, output_file_path=f'./output/experiments_sparsity/sparsity_{sparsity}.json')
+        train_simplified_snn(net, num_epochs=30, 
+                             additional_output_information={'sparsity': sparsity}, 
+                             output_file_path=f'./output/experiments_sparsity/sparsity_{sparsity}.json')
 
 
 

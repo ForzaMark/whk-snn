@@ -1,0 +1,7 @@
+{
+    "epochs": 30,
+    "training_accuracy": 0.9642857142857143,
+    "test_accuracy": 66.91696113074205,
+    "sparsity": 0,
+    "time": 1762.719051
+}
