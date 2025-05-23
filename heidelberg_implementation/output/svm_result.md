@@ -1,1 +1,0 @@
-Test set accuracy = 0.52

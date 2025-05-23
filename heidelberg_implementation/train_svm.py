@@ -1,4 +1,4 @@
-from utils import get_device
+from util.utils import get_device
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 from torch.utils.data import DataLoader

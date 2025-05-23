@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-from utils import train, compute_classification_accuracy, get_train_test_data, get_weights, get_device, save_history_plot
+from util.utils import train, compute_classification_accuracy, get_train_test_data, get_weights, get_device, save_history_plot
 
 # The coarse network structure and the time steps are dicated by the SHD dataset. 
 nb_inputs  = 700

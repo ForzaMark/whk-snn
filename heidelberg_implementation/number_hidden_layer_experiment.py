@@ -1,6 +1,6 @@
 from train_simplified_snn import num_hidden, num_inputs, num_outputs, beta, time_steps, get_device, train_simplified_snn
-from varying_hidden_layer_1000_neurons_net import VaryingHiddenLayer1000NeuronsNet
-from single_hidden_layer_1000_neurons_net import SingleHiddenLayer1000NeuronsNet
+from neural_nets.varying_hidden_layer_1000_neurons_net import VaryingHiddenLayer1000NeuronsNet
+from neural_nets.single_hidden_layer_1000_neurons_net import SingleHiddenLayer1000NeuronsNet
 
 NUM_HIDDEN_LAYERS = [
     1,

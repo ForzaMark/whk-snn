@@ -23,10 +23,12 @@ class SingleHiddenLayer1000NeuronsNet(nn.Module):
                     param.mul_(mask)
 
     def forward(self, x):
-
         # Initialize hidden states at t=0
         mem1 = self.lif1.init_leaky()
         mem2 = self.lif2.init_leaky()
+
+        spk1_rec = []
+        mem1_rec = []
 
         # Record the final layer
         spk2_rec = []
@@ -37,7 +39,12 @@ class SingleHiddenLayer1000NeuronsNet(nn.Module):
             spk1, mem1 = self.lif1(cur1, mem1)
             cur2 = self.fc2(spk1)
             spk2, mem2 = self.lif2(cur2, mem2)
+
+            spk1_rec.append(spk1)
+            mem1_rec.append(mem1)
+
             spk2_rec.append(spk2)
             mem2_rec.append(mem2)
 
-        return torch.stack(spk2_rec, dim=0), torch.stack(mem2_rec, dim=0)
+        return [torch.stack(spk1_rec, dim=0), torch.stack(spk2_rec, dim=0)], \
+               [torch.stack(mem1_rec, dim=0), torch.stack(mem2_rec, dim=0)]

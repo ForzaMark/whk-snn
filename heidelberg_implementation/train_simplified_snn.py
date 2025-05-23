@@ -1,12 +1,11 @@
 from snntorch import functional as SF
 import torch.nn as nn
-from utils import save_history_plot
+from util.utils import save_history_plot
 import torch
-from utils import get_device
+from util.utils import get_device
 import numpy as np
 from torch.utils.data import DataLoader
 from tonic import datasets, transforms
-from single_hidden_layer_1000_neurons_net import SingleHiddenLayer1000NeuronsNet
 import json
 from datetime import datetime
 
@@ -20,9 +19,11 @@ def compute_test_set_accuracy(test_data_generator, net):
             data = data.to_dense().to(torch.float32).squeeze().permute(1, 0, 2).to(device)
             targets = targets.to(device)
 
-            test_spk, _ = net(data)
+            test_spk_recs, _ = net(data)
 
-            _, predicted = test_spk.sum(dim=0).max(1)
+            output_test_spk = test_spk_recs[-1]
+
+            _, predicted = output_test_spk.sum(dim=0).max(1)
             total += targets.size(0)
             correct += (predicted == targets).sum().item()
 
@@ -86,14 +87,17 @@ def train_simplified_snn(net, num_epochs, save_model=False, save_plots=False, ad
             data = data.to_dense().to(torch.float32).squeeze().permute(1, 0, 2).to(device)
             targets = targets.to(device)
 
-            spk_rec, mem_rec = net(data)
+            spk_recs, mem_recs = net(data)
 
-            loss_val = calculate_loss_over_all_timesteps(time_steps, mem_rec, targets, LOSS_FUNCTION)
+            output_spk_rec = spk_recs[-1]
+            output_mem_rec = mem_recs[-1]
+
+            loss_val = calculate_loss_over_all_timesteps(time_steps, output_mem_rec, targets, LOSS_FUNCTION)
 
             calculate_gradient(optimizer=optimizer, loss_val=loss_val)
             update_weights(optimizer=optimizer)
             
-            acc = SF.accuracy_rate(spk_rec, targets)
+            acc = SF.accuracy_rate(output_spk_rec, targets)
             acc_hist.append(acc)
             
         print(f"loss {loss_val.item()}")
@@ -105,9 +109,9 @@ def train_simplified_snn(net, num_epochs, save_model=False, save_plots=False, ad
     end = datetime.now()
     time_diff = end - start
 
-    if save_plots:
-        save_history_plot(global_loss_hist, name='simplified_loss')
-        save_history_plot(global_acc_hist, name='simplified_accuracy')
+    if isinstance(save_plots, str):
+        save_history_plot(global_loss_hist, path=f'{save_plots}_simplified_loss')
+        save_history_plot(global_acc_hist, path=f'{save_plots}_simplified_accuracy')
 
     test_set_accuracy = compute_test_set_accuracy(test_data_loader, net)
 
@@ -119,13 +123,8 @@ def train_simplified_snn(net, num_epochs, save_model=False, save_plots=False, ad
         **additional_output_information
     }
 
-    if save_model:
-        torch.save(net.state_dict(), f'./models/{num_epochs}_epochs_simplified.pth')
+    if isinstance(save_model, str):
+        torch.save(net.state_dict(), f'{save_model}.pth')
 
     with open(output_file_path, "w") as file:
         json.dump(data, file, indent=4) 
-    
-if __name__ == '__main__':
-    net = SingleHiddenLayer1000NeuronsNet(num_inputs=num_inputs, num_outputs=num_outputs, beta=beta, time_steps=time_steps, sparsity=0).to(device)
-
-    train_simplified_snn(net, 30)

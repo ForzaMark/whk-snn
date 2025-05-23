@@ -391,7 +391,7 @@ def get_weights(device, nb_inputs, nb_hidden, nb_outputs, dtype):
 
     return w1, w2, v1
 
-def save_history_plot(history, name):
+def save_history_plot(history, path):
     plt.figure()
     plt.plot(history)
     plt.xlabel("Index (Timestep)")
@@ -399,5 +399,5 @@ def save_history_plot(history, name):
     plt.title("Array Plot")
     plt.grid(True)
 
-    plt.savefig(f"./output/{name}.png")
+    plt.savefig(path)
     plt.close()

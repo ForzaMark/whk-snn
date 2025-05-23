@@ -3,10 +3,11 @@ import torch.nn as nn
 import snntorch as snn
 
 class VaryingHiddenLayer1000NeuronsNet(nn.Module):
-    def __init__(self, num_input, num_hidden, num_output, beta, time_steps, num_hidden_layers=4):
+    def __init__(self, num_input, num_hidden, num_output, beta, time_steps, num_hidden_layers, sparsity):
         super().__init__()
 
         self.time_steps = time_steps
+        self.num_hidden_layers = num_hidden_layers
 
         self.lifs = nn.ModuleList()
         layers = []
@@ -22,6 +23,13 @@ class VaryingHiddenLayer1000NeuronsNet(nn.Module):
         self.lifs.append(snn.Leaky(beta=beta))
 
         self.linears = nn.ModuleList(layers)
+
+        with torch.no_grad():
+            for name, param in self.named_parameters():
+                if "weight" in name:
+                    mask = (torch.rand_like(param) > sparsity).float()
+                    param.mul_(mask)
+
     
     def forward(self, x):
         mems = []
@@ -29,8 +37,8 @@ class VaryingHiddenLayer1000NeuronsNet(nn.Module):
         for lif in self.lifs:
             mems.append(lif.init_leaky())
 
-        final_layer_spk_recording = []
-        final_layer_mem_recording = []
+        all_spk_recordings = [[] for _ in range(self.num_hidden_layers + 1)]
+        all_mem_recordings = [[] for _ in range(self.num_hidden_layers + 1)]
 
         for step in range(self.time_steps):
             for i, (linear, lif) in enumerate(zip(self.linears, self.lifs)):
@@ -43,8 +51,8 @@ class VaryingHiddenLayer1000NeuronsNet(nn.Module):
 
                 mems[i] = mem
 
-                if i == (len(self.lifs) - 1):
-                    final_layer_spk_recording.append(spk)
-                    final_layer_mem_recording.append(mem)
+                all_spk_recordings[i].append(spk)
+                all_mem_recordings[i].append(mem)
 
-        return torch.stack(final_layer_spk_recording, dim=0), torch.stack(final_layer_mem_recording, dim=0)
+        return [torch.stack(spk_recording, dim=0) for spk_recording in  all_spk_recordings], \
+               [torch.stack(mem_recording, dim=0) for mem_recording in all_mem_recordings]
