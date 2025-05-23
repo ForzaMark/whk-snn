@@ -62,7 +62,7 @@ frame_transform = transforms.ToFrame(
 
 LOSS_FUNCTION = nn.CrossEntropyLoss()
 
-def train_simplified_snn(net, num_epochs, save_model=False, additional_output_information={}, output_file_path='output/simplified_results.json'):
+def train_simplified_snn(net, num_epochs, save_model=False, save_plots=False, additional_output_information={}, output_file_path='output/simplified_results.json'):
     train_data = datasets.SHD("./data", transform=frame_transform, train=True)
     test_data = datasets.SHD("./data", transform=frame_transform, train=False)
     
@@ -105,8 +105,9 @@ def train_simplified_snn(net, num_epochs, save_model=False, additional_output_in
     end = datetime.now()
     time_diff = end - start
 
-    save_history_plot(global_loss_hist, name='simplified_loss')
-    save_history_plot(global_acc_hist, name='simplified_accuracy')
+    if save_plots:
+        save_history_plot(global_loss_hist, name='simplified_loss')
+        save_history_plot(global_acc_hist, name='simplified_accuracy')
 
     test_set_accuracy = compute_test_set_accuracy(test_data_loader, net)
 

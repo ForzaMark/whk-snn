@@ -1,0 +1,7 @@
+{
+    "epochs": 1,
+    "training_accuracy": 0.32142857142857145,
+    "test_accuracy": 52.208480565371026,
+    "time": 42.271166,
+    "number_hidden_layer": 1
+}
