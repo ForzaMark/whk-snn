@@ -1,0 +1,15 @@
+import torch
+from util.utils import get_device
+
+TIME_STEPS = 100
+DTYPE = torch.float
+BATCH_SIZE = 32
+
+NUMBER_INPUT_NEURONS = 700
+NUMBER_HIDDEN_NEURONS = 1000
+NUMBER_OUTPUT_NEURONS = 20
+NUMBER_HIDDEN_LAYERS = 1
+
+MAX_TIME = 1.4
+BETA = 0.99
+DEVICE = get_device()

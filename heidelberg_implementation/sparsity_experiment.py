@@ -1,6 +1,7 @@
 import torch
-from single_hidden_layer_1000_neurons_net import SingleHiddenLayer1000NeuronsNet
-from train_simplified_snn import train_simplified_snn, num_inputs, num_outputs, beta, time_steps, get_device
+from neural_nets.configurable_spiking_neural_net import ConfigurableSpikingNeuralNet
+from constants import NUMBER_INPUT_NEURONS, NUMBER_HIDDEN_NEURONS, NUMBER_HIDDEN_LAYERS, NUMBER_OUTPUT_NEURONS, BETA, TIME_STEPS, DEVICE
+from training.train_simplified_snn import train_simplified_snn
 
 def count_nonzero_weights(model):
     nonzero = 0
@@ -22,10 +23,14 @@ SPARSITIES = [
 ]
 
 if __name__ == '__main__':
-    device = get_device()
-
     for sparsity in SPARSITIES:
-        net = SingleHiddenLayer1000NeuronsNet(num_inputs=num_inputs, num_outputs=num_outputs, beta=beta, time_steps=time_steps, sparsity=sparsity).to(device)
+        net = ConfigurableSpikingNeuralNet(number_input_neurons=NUMBER_INPUT_NEURONS, 
+                                           number_hidden_neurons=NUMBER_HIDDEN_NEURONS,
+                                           number_hidden_layers=NUMBER_HIDDEN_LAYERS,
+                                           number_output_neurons=NUMBER_OUTPUT_NEURONS, 
+                                           beta=BETA, 
+                                           time_steps=TIME_STEPS, 
+                                           sparsity=sparsity).to(DEVICE)
         
         count_nonzero_weights(net)
 

@@ -1,21 +1,22 @@
-from train_simplified_snn import num_inputs, num_outputs, beta, time_steps, get_device, train_simplified_snn
-from neural_nets.varying_hidden_layer_1000_neurons_net import VaryingHiddenLayer1000NeuronsNet
+from neural_nets.configurable_spiking_neural_net import ConfigurableSpikingNeuralNet
 import numpy as np
+from constants import NUMBER_INPUT_NEURONS, NUMBER_OUTPUT_NEURONS, BETA, TIME_STEPS, NUMBER_HIDDEN_LAYERS
+from training.train_simplified_snn import train_simplified_snn
 
 NUM_HIDDEN_NEURONS = np.arange(500, 5500, 500)
 
-device = get_device()
 num_epochs = 30
 sparsity = 0
 
 for number_hidden_neurons in NUM_HIDDEN_NEURONS:
     print(f'Number hidden neurons = {number_hidden_neurons}')
-    model = VaryingHiddenLayer1000NeuronsNet(num_input=num_inputs, 
-                                            num_hidden=number_hidden_neurons,
-                                            num_output=num_outputs, 
-                                            beta=beta, 
-                                            time_steps=time_steps,
-                                            num_hidden_layers=1)
+    model = ConfigurableSpikingNeuralNet(number_input_neurons=NUMBER_INPUT_NEURONS, 
+                                         number_hidden_neurons=number_hidden_neurons,
+                                         number_output_neurons=NUMBER_OUTPUT_NEURONS, 
+                                         beta=BETA, 
+                                         time_steps=TIME_STEPS,
+                                         number_hidden_layers=NUMBER_HIDDEN_LAYERS,
+                                         sparsity=0)
 
     train_simplified_snn(model, 
                         num_epochs=num_epochs,

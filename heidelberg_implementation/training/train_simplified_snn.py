@@ -2,12 +2,13 @@ from snntorch import functional as SF
 import torch.nn as nn
 from util.utils import save_history_plot
 import torch
-from util.utils import get_device
 import numpy as np
 from torch.utils.data import DataLoader
 from tonic import datasets, transforms
 import json
 from datetime import datetime
+from constants import DEVICE, DTYPE, TIME_STEPS, BATCH_SIZE
+from typing import Union
 
 def compute_test_set_accuracy(test_data_generator, net):
     total = 0
@@ -16,8 +17,8 @@ def compute_test_set_accuracy(test_data_generator, net):
     with torch.no_grad():
         net.eval()
         for data, targets in test_data_generator:
-            data = data.to_dense().to(torch.float32).squeeze().permute(1, 0, 2).to(device)
-            targets = targets.to(device)
+            data = data.to_dense().to(torch.float32).squeeze().permute(1, 0, 2).to(DEVICE)
+            targets = targets.to(DEVICE)
 
             test_spk_recs, _ = net(data)
 
@@ -31,7 +32,7 @@ def compute_test_set_accuracy(test_data_generator, net):
     return 100 * correct / total
 
 def calculate_loss_over_all_timesteps(time_steps, mem_rec, targets, loss_function):
-    loss_val = torch.zeros((1), dtype=dtype, device=device)
+    loss_val = torch.zeros((1), dtype=DTYPE, device=DEVICE)
 
     for step in range(time_steps):
         loss_val += loss_function(mem_rec[step], targets)
@@ -45,30 +46,19 @@ def calculate_gradient(optimizer, loss_val):
 def update_weights(optimizer):
     optimizer.step()
 
-time_steps = 100
-num_inputs = 700
-num_hidden = 1000
-num_outputs = 20
-dtype = torch.float
-batch_size = 32
-
-max_time = 1.4
-beta = 0.99
-device = get_device()
-
 frame_transform = transforms.ToFrame(
     sensor_size=datasets.SHD.sensor_size,  
-    n_time_bins=time_steps
+    n_time_bins=TIME_STEPS
 )
 
 LOSS_FUNCTION = nn.CrossEntropyLoss()
 
-def train_simplified_snn(net, num_epochs, save_model=False, save_plots=False, additional_output_information={}, output_file_path='output/simplified_results.json'):
+def train_simplified_snn(net, num_epochs, save_model: Union[bool, str]=False, save_plots: Union[bool, str]=False, additional_output_information={}, output_file_path='output/simplified_results.json'):
     train_data = datasets.SHD("./data", transform=frame_transform, train=True)
     test_data = datasets.SHD("./data", transform=frame_transform, train=False)
     
-    train_data_loader = DataLoader(train_data, shuffle=False, batch_size=batch_size)
-    test_data_loader = DataLoader(test_data, shuffle=False, batch_size=batch_size)
+    train_data_loader = DataLoader(train_data, shuffle=False, batch_size=BATCH_SIZE)
+    test_data_loader = DataLoader(test_data, shuffle=False, batch_size=BATCH_SIZE)
     
     optimizer = torch.optim.Adam(net.parameters(), lr=5e-4, betas=(0.9, 0.999))
 
@@ -81,18 +71,17 @@ def train_simplified_snn(net, num_epochs, save_model=False, save_plots=False, ad
         print(f"Epoch: {epoch}")
 
         for i, (data, targets) in enumerate(train_data_loader):
-            loss_hist = []
             acc_hist = []
 
-            data = data.to_dense().to(torch.float32).squeeze().permute(1, 0, 2).to(device)
-            targets = targets.to(device)
+            data = data.to_dense().to(torch.float32).squeeze().permute(1, 0, 2).to(DEVICE)
+            targets = targets.to(DEVICE)
 
             spk_recs, mem_recs = net(data)
 
             output_spk_rec = spk_recs[-1]
             output_mem_rec = mem_recs[-1]
 
-            loss_val = calculate_loss_over_all_timesteps(time_steps, output_mem_rec, targets, LOSS_FUNCTION)
+            loss_val = calculate_loss_over_all_timesteps(TIME_STEPS, output_mem_rec, targets, LOSS_FUNCTION)
 
             calculate_gradient(optimizer=optimizer, loss_val=loss_val)
             update_weights(optimizer=optimizer)

@@ -2,24 +2,31 @@ import torch
 import torch.nn as nn
 import snntorch as snn
 
-class VaryingHiddenLayer1000NeuronsNet(nn.Module):
-    def __init__(self, num_input, num_hidden, num_output, beta, time_steps, num_hidden_layers, sparsity):
+class ConfigurableSpikingNeuralNet(nn.Module):
+    def __init__(self, 
+                 number_input_neurons, 
+                 number_hidden_neurons, 
+                 number_output_neurons, 
+                 beta, 
+                 time_steps, 
+                 number_hidden_layers, 
+                 sparsity):
         super().__init__()
 
         self.time_steps = time_steps
-        self.num_hidden_layers = num_hidden_layers
+        self.num_hidden_layers = number_hidden_layers
 
         self.lifs = nn.ModuleList()
         layers = []
 
-        layers.append(nn.Linear(num_input, num_hidden))
+        layers.append(nn.Linear(number_input_neurons, number_hidden_neurons))
         self.lifs.append(snn.Leaky(beta=beta))
 
-        for _ in range(num_hidden_layers - 1):
-            layers.append(nn.Linear(num_hidden, num_hidden))
+        for _ in range(number_hidden_layers - 1):
+            layers.append(nn.Linear(number_hidden_neurons, number_hidden_neurons))
             self.lifs.append(snn.Leaky(beta=beta))
 
-        layers.append(nn.Linear(num_hidden, num_output))
+        layers.append(nn.Linear(number_hidden_neurons, number_output_neurons))
         self.lifs.append(snn.Leaky(beta=beta))
 
         self.linears = nn.ModuleList(layers)
