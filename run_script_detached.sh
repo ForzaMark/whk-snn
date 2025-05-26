@@ -1,0 +1,1 @@
+nohup python -u grid_search_early_stopping_experiment.py > output.log 2>&1 &

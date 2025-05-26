@@ -73,7 +73,7 @@ frame_transform = transforms.ToFrame(
 LOSS_FUNCTION = nn.CrossEntropyLoss()
 
 def train_simplified_snn(net, num_epochs, save_model: Union[bool, str]=False, save_plots: Union[bool, str]=False, additional_output_information={}, output_file_path='output/simplified_results.json'):
-    early_stopper = EarlyStopping(patience=2, min_delta=0.1)
+    early_stopper = EarlyStopping(patience=3, min_delta=0.01)
     
     train_data = datasets.SHD("./data", transform=frame_transform, train=True)
     test_data = datasets.SHD("./data", transform=frame_transform, train=False)
@@ -87,6 +87,7 @@ def train_simplified_snn(net, num_epochs, save_model: Union[bool, str]=False, sa
     acc_history = []
     best_model = None
     best_test_accuracy = 0
+    early_stopped_number_epoch = 0
 
     start = datetime.now()
 
@@ -99,13 +100,13 @@ def train_simplified_snn(net, num_epochs, save_model: Union[bool, str]=False, sa
             loss_history.append(loss_val)
             acc_history.append(acc)
 
+        test_accuracy = compute_test_set_accuracy(test_data_loader, net)
         
         print(f"loss {loss_history[-1]}")
-        print(f"accuracy {acc_history[-1]}")
+        print(f"train accuracy {acc_history[-1]}")
+        print(f"test accuracy {test_accuracy}")
 
         if num_epochs == 'early_stopping':
-            test_accuracy = compute_test_set_accuracy(test_data_loader, net)
-
             if test_accuracy > best_test_accuracy:
                 best_model = copy.deepcopy(net)
                 best_test_accuracy = test_accuracy
@@ -114,6 +115,7 @@ def train_simplified_snn(net, num_epochs, save_model: Union[bool, str]=False, sa
 
             if early_stopper.early_stop:
                 print("Early stopping triggered.")
+                early_stopped_number_epoch = epoch
                 break
         else:
             best_model = net
@@ -129,7 +131,7 @@ def train_simplified_snn(net, num_epochs, save_model: Union[bool, str]=False, sa
     test_set_accuracy = compute_test_set_accuracy(test_data_loader, net)
 
     data = {
-        'epochs': num_epochs,
+        'epochs': early_stopped_number_epoch if num_epochs == 'early_stopping' else num_epochs,
         'training_accuracy': acc_history[-1],
         'test_accuracy': test_set_accuracy,
         'time':  time_diff.total_seconds(),
