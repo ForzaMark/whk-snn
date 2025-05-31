@@ -31,36 +31,55 @@ best_number_hidden_neurons_model = ConfigurableSpikingNeuralNet(number_input_neu
                                                  number_hidden_layers=NUMBER_HIDDEN_LAYERS,
                                                  sparsity=0)
 
+best_grid_search_model = ConfigurableSpikingNeuralNet(number_input_neurons=NUMBER_INPUT_NEURONS,
+                                                 number_hidden_neurons=3000,
+                                                 number_output_neurons=NUMBER_OUTPUT_NEURONS,
+                                                 beta=BETA,
+                                                 time_steps=TIME_STEPS,
+                                                 number_hidden_layers=2,
+                                                 sparsity=0)
+
 if __name__ == '__main__':
-    train_simplified_snn(best_sparsity_model, 
-                        num_epochs=num_epochs, 
-                        save_model='./models/best_sparsity', 
-                        save_plots='./output/experiments_sparsity/best_sparsity', 
-                        additional_output_information={
-                            'num_hidden_neurons': NUMBER_HIDDEN_NEURONS,
-                            'num_hidden_layer': NUMBER_HIDDEN_LAYERS,
-                            'sparsity': best_sparsity
-                        },
-                        output_file_path='./output/experiments_sparsity/best_sparsity.json')
+    # train_simplified_snn(best_sparsity_model, 
+    #                     num_epochs=num_epochs, 
+    #                     save_model='./models/best_sparsity', 
+    #                     save_plots='./output/experiments_sparsity/best_sparsity', 
+    #                     additional_output_information={
+    #                         'num_hidden_neurons': NUMBER_HIDDEN_NEURONS,
+    #                         'num_hidden_layer': NUMBER_HIDDEN_LAYERS,
+    #                         'sparsity': best_sparsity
+    #                     },
+    #                     output_file_path='./output/experiments_sparsity/best_sparsity.json')
 
-    train_simplified_snn(best_number_hidden_layer_model, 
-                        num_epochs=num_epochs, 
-                        save_model='./models/best_number_hidden_layer', 
-                        save_plots='./output/experiments_multiple_hidden_layer/best_number_hidden_layer', 
+    # train_simplified_snn(best_number_hidden_layer_model, 
+    #                     num_epochs=num_epochs, 
+    #                     save_model='./models/best_number_hidden_layer', 
+    #                     save_plots='./output/experiments_multiple_hidden_layer/best_number_hidden_layer', 
+    #                     additional_output_information={
+    #                         'num_hidden_neurons': NUMBER_HIDDEN_NEURONS,
+    #                         'num_hidden_layer': best_number_hidden_layer,
+    #                         'sparsity': 0
+    #                     },
+    #                     output_file_path='./output/experiments_multiple_hidden_layer/best_number_hidden_layer.json')
+
+    # train_simplified_snn(best_number_hidden_neurons_model, 
+    #                     num_epochs=num_epochs, 
+    #                     save_model='./models/best_number_hidden_neurons', 
+    #                     save_plots='./output/experiments_number_hidden_neurons/best_number_hidden_neurons', 
+    #                     additional_output_information={
+    #                         'num_hidden_layer': NUMBER_HIDDEN_LAYERS,
+    #                         'num_hidden_neurons': best_number_hidden_neurons,
+    #                         'sparsity': 0
+    #                     },
+    #                     output_file_path='./output/experiments_number_hidden_neurons/best_number_hidden_neurons.json')
+
+    train_simplified_snn(best_grid_search_model, 
+                        num_epochs='early_stopping', 
+                        save_model='./models/best_grid_search', 
+                        save_plots='./output/experiments_number_hidden_neurons/best_grid_search', 
                         additional_output_information={
-                            'num_hidden_neurons': NUMBER_HIDDEN_NEURONS,
-                            'num_hidden_layer': best_number_hidden_layer,
+                            'num_hidden_layer': 2,
+                            'num_hidden_neurons': 3000,
                             'sparsity': 0
                         },
-                        output_file_path='./output/experiments_multiple_hidden_layer/best_number_hidden_layer.json')
-
-    train_simplified_snn(best_number_hidden_neurons_model, 
-                        num_epochs=num_epochs, 
-                        save_model='./models/best_number_hidden_neurons', 
-                        save_plots='./output/experiments_number_hidden_neurons/best_number_hidden_neurons', 
-                        additional_output_information={
-                            'num_hidden_layer': NUMBER_HIDDEN_LAYERS,
-                            'num_hidden_neurons': best_number_hidden_neurons,
-                            'sparsity': 0
-                        },
-                        output_file_path='./output/experiments_number_hidden_neurons/best_number_hidden_neurons.json')
+                        output_file_path='./output/experiments_number_hidden_neurons/best_grid_search.json')
