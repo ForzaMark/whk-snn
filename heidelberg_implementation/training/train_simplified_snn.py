@@ -1,6 +1,6 @@
 from snntorch import functional as SF
 import torch.nn as nn
-from util.utils import save_history_plot
+from util.utils import save_history_plot, save_loss_per_time_step_plot
 import torch
 from torch.utils.data import DataLoader
 from tonic import datasets, transforms
@@ -10,6 +10,22 @@ from constants import DEVICE, DTYPE, TIME_STEPS, BATCH_SIZE
 from typing import Union
 from util.early_stopping import EarlyStopping
 import copy
+import numpy as np
+
+def compute_epoch_loss_per_time_step_data(loss_per_time_step_hist, epoch):
+    last_element = loss_per_time_step_hist[-1]
+    first_element = loss_per_time_step_hist[0]
+    averaged_element = []
+
+    for i in range(TIME_STEPS):
+        averaged_element.append(np.mean(np.array(loss_per_time_step_hist)[:, i]))
+
+    return ({
+        'epoch': epoch,
+        'loss_per_time_step_last_element': last_element,
+        'loss_per_time_step_first_element': first_element,
+        'loss_per_time_step_averaged_element': averaged_element
+    })
 
 def compute_test_set_accuracy(test_data_generator, net):
     total = 0
@@ -33,12 +49,15 @@ def compute_test_set_accuracy(test_data_generator, net):
     return 100 * correct / total
 
 def calculate_loss_over_all_timesteps(time_steps, mem_rec, targets, loss_function):
+    loss_per_time_step = []
     loss_val = torch.zeros((1), dtype=DTYPE, device=DEVICE)
 
     for step in range(time_steps):
-        loss_val += loss_function(mem_rec[step], targets)
+        loss = loss_function(mem_rec[step], targets)
+        loss_val += loss
+        loss_per_time_step.append(loss.item())
 
-    return loss_val
+    return loss_val, loss_per_time_step
 
 def calculate_gradient(optimizer, loss_val):
     optimizer.zero_grad()
@@ -56,14 +75,14 @@ def train(data, targets, net, optimizer):
     output_spk_rec = spk_recs[-1]
     output_mem_rec = mem_recs[-1]
 
-    loss_val = calculate_loss_over_all_timesteps(TIME_STEPS, output_mem_rec, targets, LOSS_FUNCTION)
+    total_loss, loss_per_time_step = calculate_loss_over_all_timesteps(TIME_STEPS, output_mem_rec, targets, LOSS_FUNCTION)
 
-    calculate_gradient(optimizer=optimizer, loss_val=loss_val)
+    calculate_gradient(optimizer=optimizer, loss_val=total_loss)
     update_weights(optimizer=optimizer)
     
     acc = SF.accuracy_rate(output_spk_rec, targets)
 
-    return loss_val.item(), acc
+    return total_loss.item(), acc, loss_per_time_step
 
 frame_transform = transforms.ToFrame(
     sensor_size=datasets.SHD.sensor_size,  
@@ -88,22 +107,40 @@ def train_simplified_snn(net, num_epochs, save_model: Union[bool, str]=False, sa
     best_model = None
     best_test_accuracy = 0
     early_stopped_number_epoch = 0
+    epoch_loss_per_time_step = []
 
     start = datetime.now()
 
     for epoch in range(100 if num_epochs == 'early_stopping' else num_epochs):
         print(f"Epoch: {epoch}")
 
+        loss_per_time_step_hist = []
+        total_samples = 0
+        epoch_loss = 0.0
+        epoch_acc = 0.0
+
         for data, targets in train_data_loader:
-            loss_val, acc = train(data, targets, net, optimizer)
+            loss_val, acc, loss_per_time_step = train(data, targets, net, optimizer)
 
-            loss_history.append(loss_val)
-            acc_history.append(acc)
+            batch_size = data.size(0)
 
+            epoch_loss += loss_val * batch_size
+            epoch_acc += acc * batch_size
+
+            total_samples += batch_size
+
+            loss_per_time_step_hist.append(loss_per_time_step)
+
+        epoch_loss_per_time_step.append(compute_epoch_loss_per_time_step_data(loss_per_time_step_hist, epoch=epoch))
         test_accuracy = compute_test_set_accuracy(test_data_loader, net)
+        avg_epoch_loss = epoch_loss / total_samples
+        avg_epoch_train_acc = epoch_acc / total_samples
+
+        loss_history.append(avg_epoch_loss)
+        acc_history.append(avg_epoch_train_acc)
         
-        print(f"loss {loss_history[-1]}")
-        print(f"train accuracy {acc_history[-1]}")
+        print(f"loss {avg_epoch_loss}")
+        print(f"train accuracy {avg_epoch_train_acc}")
         print(f"test accuracy {test_accuracy}")
 
         if num_epochs == 'early_stopping':
@@ -127,6 +164,7 @@ def train_simplified_snn(net, num_epochs, save_model: Union[bool, str]=False, sa
     if isinstance(save_plots, str):
         save_history_plot(loss_history, path=f'{save_plots}_simplified_loss')
         save_history_plot(acc_history, path=f'{save_plots}_simplified_accuracy')
+        save_loss_per_time_step_plot(epoch_loss_per_time_step, path=f'{save_plots}_loss_per_time_steps')
 
     test_set_accuracy = compute_test_set_accuracy(test_data_loader, net)
 
