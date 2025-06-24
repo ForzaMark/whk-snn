@@ -432,7 +432,7 @@ def save_loss_per_time_step_plot(epoch_loss_per_time_step, path):
             else:
                 ax.plot(x, loss_per_time_step)
     
-    plt.tight_layout(rect=[0, 1, 1, 1])
+    plt.tight_layout(rect=[0, 0.1, 1, 1])
 
     handles, labels = axes[0].get_legend_handles_labels()
     fig.legend(handles, labels, loc='lower center', ncol=5, bbox_to_anchor=(0.5, -0.2))

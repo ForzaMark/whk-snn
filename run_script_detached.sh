@@ -1,1 +1,1 @@
-nohup python -u grid_search_early_stopping_experiment.py > output.log 2>&1 &
+nohup python -u layer_development_investigation_experiment.py > layer_development_investigation_experiment.log 2>&1 &
