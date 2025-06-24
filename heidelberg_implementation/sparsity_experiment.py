@@ -1,6 +1,6 @@
 import torch
 from neural_nets.configurable_spiking_neural_net import ConfigurableSpikingNeuralNet
-from constants import NUMBER_INPUT_NEURONS, NUMBER_HIDDEN_NEURONS, NUMBER_HIDDEN_LAYERS, NUMBER_OUTPUT_NEURONS, BETA, TIME_STEPS, DEVICE
+from constants import NUMBER_INPUT_NEURONS, NUMBER_HIDDEN_NEURONS, NUMBER_HIDDEN_LAYERS, THRESHOLD, NUMBER_OUTPUT_NEURONS, BETA, TIME_STEPS, DEVICE
 from training.train_simplified_snn import train_simplified_snn
 
 def count_nonzero_weights(model):
@@ -29,6 +29,7 @@ if __name__ == '__main__':
                                            number_hidden_layers=NUMBER_HIDDEN_LAYERS,
                                            number_output_neurons=NUMBER_OUTPUT_NEURONS, 
                                            beta=BETA, 
+                                           threshold=THRESHOLD,
                                            time_steps=TIME_STEPS, 
                                            sparsity=sparsity).to(DEVICE)
         

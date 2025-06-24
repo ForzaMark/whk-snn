@@ -1,6 +1,6 @@
 from neural_nets.configurable_spiking_neural_net import ConfigurableSpikingNeuralNet
 import numpy as np
-from constants import NUMBER_INPUT_NEURONS, NUMBER_OUTPUT_NEURONS, BETA, TIME_STEPS, NUMBER_HIDDEN_LAYERS
+from constants import NUMBER_INPUT_NEURONS, NUMBER_OUTPUT_NEURONS, BETA, THRESHOLD, TIME_STEPS
 from training.train_simplified_snn import train_simplified_snn
 
 HIDDEN_NEURONS = np.arange(1000, 4000, 1000)
@@ -18,6 +18,7 @@ for number_hidden_neurons in HIDDEN_NEURONS:
                                             number_hidden_neurons=number_hidden_neurons,
                                             number_output_neurons=NUMBER_OUTPUT_NEURONS, 
                                             beta=BETA, 
+                                            threshold=THRESHOLD,
                                             time_steps=TIME_STEPS,
                                             number_hidden_layers=number_hidden_layer,
                                             sparsity=0)

@@ -8,6 +8,7 @@ class ConfigurableSpikingNeuralNet(nn.Module):
                  number_hidden_neurons, 
                  number_output_neurons, 
                  beta, 
+                 threshold,
                  time_steps, 
                  number_hidden_layers, 
                  sparsity):
@@ -20,14 +21,14 @@ class ConfigurableSpikingNeuralNet(nn.Module):
         layers = []
 
         layers.append(nn.Linear(number_input_neurons, number_hidden_neurons))
-        self.lifs.append(snn.Leaky(beta=beta))
+        self.lifs.append(snn.Leaky(beta=beta, threshold=threshold))
 
         for _ in range(number_hidden_layers - 1):
             layers.append(nn.Linear(number_hidden_neurons, number_hidden_neurons))
-            self.lifs.append(snn.Leaky(beta=beta))
+            self.lifs.append(snn.Leaky(beta=beta, threshold=threshold))
 
         layers.append(nn.Linear(number_hidden_neurons, number_output_neurons))
-        self.lifs.append(snn.Leaky(beta=beta))
+        self.lifs.append(snn.Leaky(beta=beta, threshold=threshold))
 
         self.linears = nn.ModuleList(layers)
 
@@ -36,7 +37,6 @@ class ConfigurableSpikingNeuralNet(nn.Module):
                 if "weight" in name:
                     mask = (torch.rand_like(param) > sparsity).float()
                     param.mul_(mask)
-
     
     def forward(self, x):
         mems = []

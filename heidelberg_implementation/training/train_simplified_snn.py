@@ -162,9 +162,9 @@ def train_simplified_snn(net, num_epochs, save_model: Union[bool, str]=False, sa
     time_diff = end - start
 
     if isinstance(save_plots, str):
-        save_history_plot(loss_history, path=f'{save_plots}_simplified_loss')
-        save_history_plot(acc_history, path=f'{save_plots}_simplified_accuracy')
-        save_loss_per_time_step_plot(epoch_loss_per_time_step, path=f'{save_plots}_loss_per_time_steps')
+        save_history_plot(loss_history, path=f'{save_plots}_simplified_loss.png')
+        save_history_plot(acc_history, path=f'{save_plots}_simplified_accuracy.png')
+        save_loss_per_time_step_plot(epoch_loss_per_time_step, path=f'{save_plots}_loss_per_time_steps.png')
 
     test_set_accuracy = compute_test_set_accuracy(test_data_loader, net)
 
