@@ -7,7 +7,7 @@ BEST_NUMBER_HIDDEN_LAYER = 2
 BEST_NUMBER_HIDDEN_NEURONS = 3000
 SPARSITY_PARAMETERS = [0, 0.2, 0.7, 0.95]
 BETA_PARAMETERS = [0.99, 0.8, 0.5, 0.2]
-THRESHOLD_PARAMETERS = [0.7, 1, 3]
+THRESHOLD_PARAMETERS = [1, 0.7, 3]
 
 def create_best_grid_search_model(sparsity, beta, threshold):
     return ConfigurableSpikingNeuralNet(number_input_neurons=NUMBER_INPUT_NEURONS,
@@ -52,3 +52,4 @@ if __name__ == '__main__':
                             },
                             output_file_path=f'./output/experiments_layer_development_investigation/best_grid_search_sparsity_{sparsity}_beta_{beta}_threshold_{threshold}.json')
     
+    print('DONE')

@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 import snntorch as snn
+from snntorch import surrogate
+from constants import ATAN_ALPHA
 
 class ConfigurableSpikingNeuralNet(nn.Module):
     def __init__(self, 
@@ -11,7 +13,8 @@ class ConfigurableSpikingNeuralNet(nn.Module):
                  threshold,
                  time_steps, 
                  number_hidden_layers, 
-                 sparsity):
+                 sparsity,
+                 surrogate_approximation = surrogate.atan(alpha = ATAN_ALPHA)):
         super().__init__()
 
         self.time_steps = time_steps
@@ -21,14 +24,14 @@ class ConfigurableSpikingNeuralNet(nn.Module):
         layers = []
 
         layers.append(nn.Linear(number_input_neurons, number_hidden_neurons))
-        self.lifs.append(snn.Leaky(beta=beta, threshold=threshold))
+        self.lifs.append(snn.Leaky(beta=beta, threshold=threshold, spike_grad=surrogate_approximation))
 
         for _ in range(number_hidden_layers - 1):
             layers.append(nn.Linear(number_hidden_neurons, number_hidden_neurons))
-            self.lifs.append(snn.Leaky(beta=beta, threshold=threshold))
+            self.lifs.append(snn.Leaky(beta=beta, threshold=threshold, spike_grad=surrogate_approximation))
 
         layers.append(nn.Linear(number_hidden_neurons, number_output_neurons))
-        self.lifs.append(snn.Leaky(beta=beta, threshold=threshold))
+        self.lifs.append(snn.Leaky(beta=beta, threshold=threshold, spike_grad=surrogate_approximation))
 
         self.linears = nn.ModuleList(layers)
 
