@@ -1,7 +1,15 @@
+from constants import (
+    BETA,
+    NUMBER_INPUT_NEURONS,
+    NUMBER_OUTPUT_NEURONS,
+    SPIKE_RATE_ESCAPE_BETA,
+    SPIKE_RATE_ESCAPE_SLOPE,
+    THRESHOLD,
+    TIME_STEPS,
+)
 from neural_nets.configurable_spiking_neural_net import ConfigurableSpikingNeuralNet
-from training.train_simplified_snn import train_simplified_snn
-from constants import NUMBER_INPUT_NEURONS, NUMBER_OUTPUT_NEURONS, THRESHOLD, BETA, TIME_STEPS, SPIKE_RATE_ESCAPE_BETA, SPIKE_RATE_ESCAPE_SLOPE
 from snntorch import surrogate
+from training.train_snn import train_snn
 
 best_sparsity = 0
 best_number_hidden_layer = 2
@@ -29,7 +37,7 @@ best_grid_search_model_spike_rate_escape = ConfigurableSpikingNeuralNet(number_i
                                                 )
 
 if __name__ == '__main__':
-    train_simplified_snn(best_grid_search_model_atan, 
+    train_snn(best_grid_search_model_atan, 
                             num_epochs='early_stopping', 
                             save_model='./models/experiment_different_surrogate_approximation/atan', 
                             save_plots='./output/experiment_different_surrogate_approximation/atan.jpg', 
@@ -42,7 +50,7 @@ if __name__ == '__main__':
                             output_file_path='./output/experiment_different_surrogate_approximation/atan.json')
         
 
-    train_simplified_snn(best_grid_search_model_spike_rate_escape, 
+    train_snn(best_grid_search_model_spike_rate_escape, 
                     num_epochs='early_stopping', 
                     save_model='./models/experiment_different_surrogate_approximation/spike_rate_escape', 
                     save_plots='./output/experiment_different_surrogate_approximation/spike_rate_escape.jpg', 

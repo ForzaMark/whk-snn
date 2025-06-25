@@ -86,7 +86,7 @@ def train(data, targets, net, optimizer, loss_configuration: Loss_Configuration)
 
 
 
-def train_simplified_snn(net, 
+def train_snn(net, 
                          num_epochs, 
                          save_model: Union[bool, str]=False, 
                          save_plots: Union[bool, str]=False, 

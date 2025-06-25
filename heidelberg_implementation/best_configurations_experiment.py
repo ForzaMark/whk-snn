@@ -1,6 +1,14 @@
+from constants import (
+    BETA,
+    NUMBER_HIDDEN_LAYERS,
+    NUMBER_HIDDEN_NEURONS,
+    NUMBER_INPUT_NEURONS,
+    NUMBER_OUTPUT_NEURONS,
+    THRESHOLD,
+    TIME_STEPS,
+)
 from neural_nets.configurable_spiking_neural_net import ConfigurableSpikingNeuralNet
-from training.train_simplified_snn import train_simplified_snn
-from constants import NUMBER_INPUT_NEURONS, NUMBER_HIDDEN_NEURONS, NUMBER_OUTPUT_NEURONS, THRESHOLD, BETA, TIME_STEPS, NUMBER_HIDDEN_LAYERS
+from training.train_snn import train_snn
 
 best_sparsity = 0
 best_number_hidden_layer = 2
@@ -44,7 +52,7 @@ best_grid_search_model = ConfigurableSpikingNeuralNet(number_input_neurons=NUMBE
                                                  sparsity=0)
 
 if __name__ == '__main__':
-    train_simplified_snn(best_grid_search_model, 
+    train_snn(best_grid_search_model, 
                         num_epochs='early_stopping', 
                         save_model='./models/best_grid_search', 
                         save_plots='./output/experiments_number_hidden_neurons/best_grid_search', 

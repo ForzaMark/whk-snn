@@ -1,7 +1,8 @@
-from neural_nets.configurable_spiking_neural_net import ConfigurableSpikingNeuralNet
-from training.train_simplified_snn import train_simplified_snn
-from constants import NUMBER_INPUT_NEURONS, NUMBER_OUTPUT_NEURONS, TIME_STEPS
 from itertools import product
+
+from constants import NUMBER_INPUT_NEURONS, NUMBER_OUTPUT_NEURONS, TIME_STEPS
+from neural_nets.configurable_spiking_neural_net import ConfigurableSpikingNeuralNet
+from training.train_snn import train_snn
 
 BEST_NUMBER_HIDDEN_LAYER = 2
 BEST_NUMBER_HIDDEN_NEURONS = 3000
@@ -39,7 +40,7 @@ if __name__ == '__main__':
 
         print(f'sparsity: {sparsity} | beta: {beta} | threshold: {threshold}')
 
-        train_simplified_snn(model, 
+        train_snn(model, 
                             num_epochs=num_epochs, 
                             save_model=f'./models/experiment_layer_development_investigation/best_grid_search_sparsity_{sparsity}_beta_{beta}_threshold_{threshold}', 
                             save_plots=f'./output/experiments_layer_development_investigation/best_grid_search_sparsity_{sparsity}_beta_{beta}_threshold_{threshold}', 
