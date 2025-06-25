@@ -6,8 +6,8 @@ from itertools import product
 BEST_NUMBER_HIDDEN_LAYER = 2
 BEST_NUMBER_HIDDEN_NEURONS = 3000
 SPARSITY_PARAMETERS = [0, 0.2, 0.7, 0.95]
-BETA_PARAMETERS = [0.99, 0.8, 0.5, 0.2]
-THRESHOLD_PARAMETERS = [1, 0.7, 3]
+BETA_PARAMETERS = [0.99, 0.8]
+THRESHOLD_PARAMETERS = [1, 0.7]
 
 def create_best_grid_search_model(sparsity, beta, threshold):
     return ConfigurableSpikingNeuralNet(number_input_neurons=NUMBER_INPUT_NEURONS,
@@ -19,14 +19,14 @@ def create_best_grid_search_model(sparsity, beta, threshold):
                                                  number_hidden_layers=BEST_NUMBER_HIDDEN_LAYER,
                                                  sparsity=sparsity)
 
-PARAMETER_COMBINATIONS = list(product(SPARSITY_PARAMETERS, BETA_PARAMETERS, THRESHOLD_PARAMETERS))
+PARAMETER_COMBINATIONS = list(product(BETA_PARAMETERS, THRESHOLD_PARAMETERS, SPARSITY_PARAMETERS))
 
 ALL_CONFIGURATIONS = [{
         'model':create_best_grid_search_model(sparsity, beta, threshold),
         'sparsity': sparsity,
         'beta': beta,
         'threshold': threshold
-    } for sparsity, beta, threshold in PARAMETER_COMBINATIONS]
+    } for beta, threshold, sparsity in PARAMETER_COMBINATIONS]
 
 num_epochs = 'early_stopping'
 

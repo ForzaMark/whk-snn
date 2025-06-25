@@ -3,6 +3,7 @@ import torch.nn as nn
 import snntorch as snn
 from snntorch import surrogate
 from constants import ATAN_ALPHA
+from typing import Union
 
 class ConfigurableSpikingNeuralNet(nn.Module):
     def __init__(self, 
@@ -14,7 +15,8 @@ class ConfigurableSpikingNeuralNet(nn.Module):
                  time_steps, 
                  number_hidden_layers, 
                  sparsity,
-                 surrogate_approximation = surrogate.atan(alpha = ATAN_ALPHA)):
+                 surrogate_approximation = surrogate.atan(alpha = ATAN_ALPHA),
+                 population_coding: Union[int, bool] = False):
         super().__init__()
 
         self.time_steps = time_steps
@@ -30,7 +32,12 @@ class ConfigurableSpikingNeuralNet(nn.Module):
             layers.append(nn.Linear(number_hidden_neurons, number_hidden_neurons))
             self.lifs.append(snn.Leaky(beta=beta, threshold=threshold, spike_grad=surrogate_approximation))
 
-        layers.append(nn.Linear(number_hidden_neurons, number_output_neurons))
+        if population_coding is False:
+            layers.append(nn.Linear(number_hidden_neurons, number_output_neurons))
+        else:
+            assert isinstance(population_coding, int) and population_coding > number_output_neurons
+            layers.append(nn.Linear(number_hidden_neurons, population_coding))
+        
         self.lifs.append(snn.Leaky(beta=beta, threshold=threshold, spike_grad=surrogate_approximation))
 
         self.linears = nn.ModuleList(layers)
