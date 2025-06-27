@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 def get_spk_matrices(data, model, selection_index):
     x_selected = data[:, selection_index, :]
 
@@ -19,7 +20,7 @@ def plot_layer_development(models, data, selection_index, sub_titles, super_titl
     for spike_matrix in spike_matrices:
         assert len(spike_matrix) == len(spike_matrices[0])
 
-    fig, axes = plt.subplots(len(spike_matrices), len(spike_matrices[0]), figsize=figsize)
+    fig, axes = plt.subplots(len(spike_matrices) if len(spike_matrices) > 1 else 2, len(spike_matrices[0]), figsize=figsize)
 
     fig.suptitle(super_title, fontsize=16)
 
