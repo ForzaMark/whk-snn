@@ -1,9 +1,11 @@
+from typing import Union
+
+import snntorch as snn
 import torch
 import torch.nn as nn
-import snntorch as snn
-from snntorch import surrogate
 from constants import ATAN_ALPHA
-from typing import Union
+from snntorch import surrogate
+
 
 class ConfigurableSpikingNeuralNet(nn.Module):
     def __init__(self, 
@@ -13,8 +15,7 @@ class ConfigurableSpikingNeuralNet(nn.Module):
                  beta, 
                  threshold,
                  time_steps, 
-                 number_hidden_layers, 
-                 sparsity,
+                 number_hidden_layers,
                  surrogate_approximation = surrogate.atan(alpha = ATAN_ALPHA),
                  population_coding: Union[int, bool] = False):
         super().__init__()
@@ -41,12 +42,6 @@ class ConfigurableSpikingNeuralNet(nn.Module):
         self.lifs.append(snn.Leaky(beta=beta, threshold=threshold, spike_grad=surrogate_approximation))
 
         self.linears = nn.ModuleList(layers)
-
-        with torch.no_grad():
-            for name, param in self.named_parameters():
-                if "weight" in name:
-                    mask = (torch.rand_like(param) > sparsity).float()
-                    param.mul_(mask)
     
     def forward(self, x):
         mems = []

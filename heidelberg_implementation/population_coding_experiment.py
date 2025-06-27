@@ -13,7 +13,7 @@ num_epochs = 'early_stopping'
 sparsity = 0
 
 LOSS_CONFIGURATIONS = [
-    #"membrane_potential_cross_entropy", 
+    "membrane_potential_cross_entropy", 
     "rate_code_cross_entropy"
 ]
 

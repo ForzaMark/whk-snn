@@ -7,8 +7,12 @@ from training.train_snn import train_snn
 BEST_NUMBER_HIDDEN_LAYER = 2
 BEST_NUMBER_HIDDEN_NEURONS = 3000
 SPARSITY_PARAMETERS = [0, 0.2, 0.7, 0.95]
-BETA_PARAMETERS = [0.99, 0.8]
-THRESHOLD_PARAMETERS = [1, 0.7]
+
+#BETA_PARAMETERS = [0.99, 0.8]
+BETA_PARAMETERS = [0.99]
+
+#THRESHOLD_PARAMETERS = [1, 0.7]
+THRESHOLD_PARAMETERS = [1]
 
 def create_best_grid_search_model(sparsity, beta, threshold):
     return ConfigurableSpikingNeuralNet(number_input_neurons=NUMBER_INPUT_NEURONS,
@@ -17,8 +21,7 @@ def create_best_grid_search_model(sparsity, beta, threshold):
                                                  beta=beta,
                                                  threshold=threshold,
                                                  time_steps=TIME_STEPS,
-                                                 number_hidden_layers=BEST_NUMBER_HIDDEN_LAYER,
-                                                 sparsity=sparsity)
+                                                 number_hidden_layers=BEST_NUMBER_HIDDEN_LAYER)
 
 PARAMETER_COMBINATIONS = list(product(BETA_PARAMETERS, THRESHOLD_PARAMETERS, SPARSITY_PARAMETERS))
 
@@ -41,6 +44,7 @@ if __name__ == '__main__':
         print(f'sparsity: {sparsity} | beta: {beta} | threshold: {threshold}')
 
         train_snn(model, 
+                            sparsity=sparsity,
                             num_epochs=num_epochs, 
                             save_model=f'./models/experiment_layer_development_investigation/best_grid_search_sparsity_{sparsity}_beta_{beta}_threshold_{threshold}', 
                             save_plots=f'./output/experiments_layer_development_investigation/best_grid_search_sparsity_{sparsity}_beta_{beta}_threshold_{threshold}', 

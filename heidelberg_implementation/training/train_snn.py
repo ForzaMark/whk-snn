@@ -7,6 +7,7 @@ import numpy as np
 import torch
 from constants import DEVICE, TIME_STEPS
 from snntorch import functional as SF
+from util.apply_random_weight_pruning import apply_random_weight_pruning
 from util.calculate_loss import Loss_Configuration, calculate_loss
 from util.create_data_loader import create_data_loader
 from util.early_stopping import EarlyStopping
@@ -87,13 +88,17 @@ def train(data, targets, net, optimizer, loss_configuration: Loss_Configuration)
 
 
 def train_snn(net, 
-                         num_epochs, 
-                         save_model: Union[bool, str]=False, 
-                         save_plots: Union[bool, str]=False, 
-                         additional_output_information={}, 
-                         output_file_path='output/generic_output_results.json',
-                         loss_configuration: Loss_Configuration ='membrane_potential_cross_entropy'):
+            num_epochs, 
+            sparsity=0,
+            save_model: Union[bool, str]=False, 
+            save_plots: Union[bool, str]=False, 
+            additional_output_information={}, 
+            output_file_path='output/generic_output_results.json',
+            loss_configuration: Loss_Configuration ='membrane_potential_cross_entropy'):
     
+    if sparsity != 0:
+        net = apply_random_weight_pruning(net, sparsity)
+
     early_stopper = EarlyStopping(patience=3, min_delta=0.01)
     
     train_data_loader, test_data_loader = create_data_loader()

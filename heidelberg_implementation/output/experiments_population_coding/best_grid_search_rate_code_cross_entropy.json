@@ -1,0 +1,7 @@
+{
+    "epochs": 11,
+    "training_accuracy": 0.5181461500735655,
+    "test_accuracy": 51.10424028268551,
+    "time": 5258.321203,
+    "loss_config": "rate_code_cross_entropy"
+}

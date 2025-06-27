@@ -12,7 +12,7 @@ def get_spk_matrices(data, model, selection_index):
 
     return [x_selected, *hidden_spk_rec, output_spk_rec.detach()]
 
-def plot_layer_development(models, data, selection_index, sub_titles, super_title, figsize=(20, 12)):
+def plot_layer_development(models, data, selection_index, sub_titles, super_title):
     spike_matrices = [
         get_spk_matrices(data, model, selection_index) for model in models
     ]
@@ -20,7 +20,12 @@ def plot_layer_development(models, data, selection_index, sub_titles, super_titl
     for spike_matrix in spike_matrices:
         assert len(spike_matrix) == len(spike_matrices[0])
 
-    fig, axes = plt.subplots(len(spike_matrices) if len(spike_matrices) > 1 else 2, len(spike_matrices[0]), figsize=figsize)
+    nrows = len(spike_matrices) if len(spike_matrices) > 1 else 2
+    ncols = len(spike_matrices[0])
+
+    figsize = (ncols*5, nrows*6)
+
+    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
 
     fig.suptitle(super_title, fontsize=16)
 
