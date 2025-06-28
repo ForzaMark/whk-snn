@@ -7,7 +7,7 @@ import numpy as np
 import torch
 from constants import DEVICE, TIME_STEPS
 from snntorch import functional as SF
-from util.apply_random_weight_pruning import apply_random_weight_pruning
+from training.pruning import apply_random_weight_pruning_mask, make_pruning_permanent
 from util.calculate_loss import Loss_Configuration, calculate_loss
 from util.create_data_loader import create_data_loader
 from util.early_stopping import EarlyStopping
@@ -86,6 +86,18 @@ def train(data, targets, net, optimizer, loss_configuration: Loss_Configuration)
     return loss.item(), acc, loss_per_time_step
 
 
+def print_sparsity(model):
+    total_params = 0
+    zero_params = 0
+    for name, param in model.named_parameters():
+        if param.requires_grad:
+            numel = param.numel()
+            zeros = torch.sum(param == 0).item()
+            total_params += numel
+            zero_params += zeros
+            print(f"{name}: {zeros}/{numel} ({100.0 * zeros / numel:.2f}%) zeros")
+    print(f"Total sparsity: {100.0 * zero_params / total_params:.2f}% ({zero_params}/{total_params})")
+
 
 def train_snn(net, 
             num_epochs, 
@@ -97,7 +109,7 @@ def train_snn(net,
             loss_configuration: Loss_Configuration ='membrane_potential_cross_entropy'):
     
     if sparsity != 0:
-        net = apply_random_weight_pruning(net, sparsity)
+        net = apply_random_weight_pruning_mask(net, sparsity)
 
     early_stopper = EarlyStopping(patience=3, min_delta=0.01)
     
@@ -164,6 +176,9 @@ def train_snn(net,
         else:
             best_model = net
             
+    if sparsity != 0:
+        net = make_pruning_permanent(net)
+        print_sparsity(net)
 
     end = datetime.now()
     time_diff = end - start
