@@ -1,8 +1,8 @@
 {
-    "epochs": 12,
-    "training_accuracy": 0.967631191760667,
-    "test_accuracy": 71.73144876325088,
-    "time": 5631.148192,
+    "epochs": 22,
+    "training_accuracy": 0.9963217263364395,
+    "test_accuracy": 71.95229681978799,
+    "time": 16016.414268,
     "num_hidden_layer": 2,
     "num_hidden_neurons": 3000,
     "sparsity": 0.2,
