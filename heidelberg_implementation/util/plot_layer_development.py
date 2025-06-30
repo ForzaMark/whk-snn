@@ -1,5 +1,27 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import torch
+from constants import TIME_STEPS
+from tonic import datasets, transforms
+from torch.utils.data import DataLoader
+from util.utils import get_device
+
+
+def load_test_data():
+    device = get_device()
+
+    frame_transform = transforms.ToFrame(
+        sensor_size=datasets.SHD.sensor_size,  
+        n_time_bins=TIME_STEPS
+    )
+
+    test_data = datasets.SHD("./data", transform=frame_transform, train=False)
+
+    test_data_loader = DataLoader(test_data, shuffle=False, batch_size=32)
+
+    data, _ = list(test_data_loader)[0]
+    data = data.to_dense().to(torch.float32).squeeze().permute(1, 0, 2).to(device)
+    return data
 
 
 def get_spk_matrices(data, model, selection_index):
@@ -12,7 +34,9 @@ def get_spk_matrices(data, model, selection_index):
 
     return [x_selected, *hidden_spk_rec, output_spk_rec.detach()]
 
-def plot_layer_development(models, data, selection_index, sub_titles, super_title):
+def plot_layer_development(models, sub_titles, super_title=None, selection_index = 2):
+    data = load_test_data()
+
     spike_matrices = [
         get_spk_matrices(data, model, selection_index) for model in models
     ]
@@ -27,7 +51,8 @@ def plot_layer_development(models, data, selection_index, sub_titles, super_titl
 
     fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
 
-    fig.suptitle(super_title, fontsize=16)
+    if super_title:
+        fig.suptitle(super_title, fontsize=16)
 
     for row_index, (spike_matrix, sub_title) in enumerate(zip(spike_matrices, sub_titles)):
         for column_index in range(len(spike_matrices[0])):

@@ -177,8 +177,8 @@ def train_snn(net,
             best_model = net
             
     if sparsity != 0:
-        net = make_pruning_permanent(net)
-        print_sparsity(net)
+        best_model = make_pruning_permanent(best_model)
+        print_sparsity(best_model)
 
     end = datetime.now()
     time_diff = end - start
@@ -189,7 +189,7 @@ def train_snn(net,
         if epoch_loss_per_time_step:
             save_loss_per_time_step_plot(epoch_loss_per_time_step, path=f'{save_plots}_loss_per_time_steps.png')
 
-    test_set_accuracy = compute_test_set_accuracy(test_data_loader, net)
+    test_set_accuracy = compute_test_set_accuracy(test_data_loader, best_model)
 
     data = {
         'epochs': early_stopped_number_epoch if num_epochs == 'early_stopping' else num_epochs,

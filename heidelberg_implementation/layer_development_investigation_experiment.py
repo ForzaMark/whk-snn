@@ -6,16 +6,13 @@ from training.train_snn import train_snn
 
 BEST_NUMBER_HIDDEN_LAYER = 2
 BEST_NUMBER_HIDDEN_NEURONS = 3000
-#SPARSITY_PARAMETERS = [0, 0.2, 0.7, 0.95]
-SPARSITY_PARAMETERS = [0.2, 0.7, 0.95]
+SPARSITY_PARAMETERS = [0, 0.2, 0.7, 0.95]
 
-#BETA_PARAMETERS = [0.99, 0.8]
-BETA_PARAMETERS = [0.99]
+BETA_PARAMETERS = [0.99, 0.8]
 
-#THRESHOLD_PARAMETERS = [1, 0.7]
-THRESHOLD_PARAMETERS = [1]
+THRESHOLD_PARAMETERS = [1, 0.7]
 
-def create_best_grid_search_model(sparsity, beta, threshold):
+def create_best_grid_search_model(beta, threshold):
     return ConfigurableSpikingNeuralNet(number_input_neurons=NUMBER_INPUT_NEURONS,
                                                  number_hidden_neurons=BEST_NUMBER_HIDDEN_NEURONS,
                                                  number_output_neurons=NUMBER_OUTPUT_NEURONS,
@@ -27,7 +24,7 @@ def create_best_grid_search_model(sparsity, beta, threshold):
 PARAMETER_COMBINATIONS = list(product(BETA_PARAMETERS, THRESHOLD_PARAMETERS, SPARSITY_PARAMETERS))
 
 ALL_CONFIGURATIONS = [{
-        'model':create_best_grid_search_model(sparsity, beta, threshold),
+        'model':create_best_grid_search_model(beta, threshold),
         'sparsity': sparsity,
         'beta': beta,
         'threshold': threshold
