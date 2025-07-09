@@ -72,11 +72,11 @@ def train(data, targets, net, optimizer, loss_configuration: Loss_Configuration)
                                  output_mem_rec, 
                                  output_spk_rec)
 
-    if len(loss_result) == 1:
+    if isinstance(loss_result, tuple):
+        loss, loss_per_time_step = loss_result
+    else:
         loss = loss_result
         loss_per_time_step = False
-    else:
-        loss, loss_per_time_step = loss_result
 
     calculate_gradient(optimizer=optimizer, loss_val=loss)
     update_weights(optimizer=optimizer)
@@ -101,14 +101,16 @@ def print_sparsity(model):
 
 def train_snn(net, 
             num_epochs, 
-            sparsity=0,
+            sparsity: float=0,
             save_model: Union[bool, str]=False, 
+            save_model_per_epoch: Union[bool, str]=False,
             save_plots: Union[bool, str]=False, 
             additional_output_information={}, 
             output_file_path='output/generic_output_results.json',
             loss_configuration: Loss_Configuration ='membrane_potential_cross_entropy'):
     
     if sparsity != 0:
+        print('apply weight pruning')
         net = apply_random_weight_pruning_mask(net, sparsity)
 
     early_stopper = EarlyStopping(patience=3, min_delta=0.01)
@@ -174,7 +176,12 @@ def train_snn(net,
                 early_stopped_number_epoch = epoch
                 break
         else:
-            best_model = net
+            best_model = copy.deepcopy(net)
+
+        if isinstance(save_model_per_epoch, str):
+            if sparsity != 0:
+                best_model = make_pruning_permanent(best_model)
+            torch.save(best_model.state_dict(), f'{save_model_per_epoch}_epoch_{epoch}.pth')
             
     if sparsity != 0:
         best_model = make_pruning_permanent(best_model)
