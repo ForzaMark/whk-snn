@@ -16,13 +16,12 @@ if __name__ == '__main__':
                                                         time_steps=TIME_STEPS,
                                                         number_hidden_layers=NUMBER_HIDDEN_LAYER)
 
-    models = []
-
     sparsity = 0.95
 
     train_snn(base_net, 
                 num_epochs=100, 
                 sparsity=sparsity,
                 save_model_per_epoch=f'./models/experiment_point_of_chaos/best_grid_search_beta_{beta}_threshold_{threshold}',
+                # TODO: fix the output paths and informations
                 additional_output_information={'sparsity': sparsity}, 
                 output_file_path=f'./output/experiments_sparsity/sparsity_{sparsity}.json')
