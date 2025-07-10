@@ -59,7 +59,7 @@ def plot_layer_development(models, sub_titles, super_title=None, selection_index
             spike_matrix_np = spike_matrix[column_index].numpy()
             times, neurons = np.where(spike_matrix_np == 1)
             ax = axes[row_index, column_index]
-            ax.scatter(times, neurons, s=0.1 if len(neurons) > 1000 else 1, color='black')
+            ax.scatter(times, neurons, s=1, color='black')
             ax.set_title(f"{sub_title} - Layer {column_index}")
             ax.set_xlabel("Time step")
             ax.set_ylim(-1, spike_matrix_np.shape[1])
