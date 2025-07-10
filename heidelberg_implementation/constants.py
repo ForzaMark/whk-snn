@@ -1,5 +1,5 @@
 import torch
-from util.utils import get_device
+from util.get_device import get_device
 
 TIME_STEPS = 100
 DTYPE = torch.float

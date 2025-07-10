@@ -3,54 +3,21 @@ import json
 from datetime import datetime
 from typing import Union
 
-import numpy as np
 import torch
-from constants import DEVICE, HEIDELBERG_DATASET_NUMBER_CLASSES, TIME_STEPS
-from snntorch import functional as SF
-from training.pruning import apply_random_weight_pruning_mask, make_pruning_permanent
+from constants import DEVICE, TIME_STEPS
+from neural_nets.configurable_spiking_neural_net import ConfigurableSpikingNeuralNet
+from training.pruning import (
+    apply_random_weight_pruning_mask,
+    make_pruning_permanent,
+    print_model_sparsity,
+)
 from util.calculate_loss import Loss_Configuration, calculate_loss
+from util.compute_accuracy import compute_accuracy, compute_test_set_accuracy
+from util.compute_epoch_loss_per_time_step import compute_epoch_loss_per_time_step
 from util.create_data_loader import create_data_loader
 from util.early_stopping import EarlyStopping
-from util.utils import save_history_plot, save_loss_per_time_step_plot
+from util.save_plots import save_history_plot, save_loss_per_time_step_plot
 
-
-def compute_epoch_loss_per_time_step_data(loss_per_time_step_hist, epoch, time_steps):
-    last_element = loss_per_time_step_hist[-1]
-    first_element = loss_per_time_step_hist[0]
-    averaged_element = []
-
-    for i in range(time_steps):
-        averaged_element.append(np.mean(np.array(loss_per_time_step_hist)[:, i]))
-
-    return ({
-        'epoch': epoch,
-        'loss_per_time_step_last_element': last_element,
-        'loss_per_time_step_first_element': first_element,
-        'loss_per_time_step_averaged_element': averaged_element
-    })
-
-def compute_test_set_accuracy(test_data_generator, net, population_coding):
-    with torch.no_grad():
-        net.eval()
-
-        per_batch_test_acc = []
-
-        for data, targets in test_data_generator:
-            data = data.to_dense().to(torch.float32).squeeze().permute(1, 0, 2).to(DEVICE)
-            targets = targets.to(DEVICE)
-
-            test_spk_recs, _ = net(data)
-
-            output_spk_recs = test_spk_recs[-1]
-
-            if population_coding:
-                acc = SF.accuracy_rate(output_spk_recs, targets, population_code=True, num_classes=HEIDELBERG_DATASET_NUMBER_CLASSES)
-                per_batch_test_acc.append(acc)
-            else:
-                acc = SF.accuracy_rate(output_spk_recs, targets)
-                per_batch_test_acc.append(acc)
-
-    return np.mean(per_batch_test_acc)
 
 def calculate_gradient(optimizer, loss_val):
     optimizer.zero_grad()
@@ -59,9 +26,9 @@ def calculate_gradient(optimizer, loss_val):
 def update_weights(optimizer):
     optimizer.step()
 
-def train(data, targets, net, optimizer, loss_configuration: Loss_Configuration, time_steps):
-    data = data.to_dense().to(torch.float32).squeeze().permute(1, 0, 2).to(DEVICE)
-    targets = targets.to(DEVICE)
+def train(train_data, train_targets, net, optimizer, loss_configuration: Loss_Configuration, time_steps):
+    data = train_data.to_dense().to(torch.float32).squeeze().permute(1, 0, 2).to(DEVICE)
+    targets = train_targets.to(DEVICE)
 
     spk_recs, mem_recs = net(data)
 
@@ -83,30 +50,11 @@ def train(data, targets, net, optimizer, loss_configuration: Loss_Configuration,
     calculate_gradient(optimizer=optimizer, loss_val=loss)
     update_weights(optimizer=optimizer)
 
-    acc = 0
-
-    if loss_configuration == 'population_coding':
-        acc = SF.accuracy_rate(output_spk_rec, targets, population_code=True, num_classes=HEIDELBERG_DATASET_NUMBER_CLASSES)
-    else:
-        acc = SF.accuracy_rate(output_spk_rec, targets)
+    acc = compute_accuracy(train_data, train_targets, net, population_coding=loss_configuration=='population_coding')
 
     return loss.item(), acc, loss_per_time_step
 
-
-def print_sparsity(model):
-    total_params = 0
-    zero_params = 0
-    for name, param in model.named_parameters():
-        if param.requires_grad:
-            numel = param.numel()
-            zeros = torch.sum(param == 0).item()
-            total_params += numel
-            zero_params += zeros
-            print(f"{name}: {zeros}/{numel} ({100.0 * zeros / numel:.2f}%) zeros")
-    print(f"Total sparsity: {100.0 * zero_params / total_params:.2f}% ({zero_params}/{total_params})")
-
-
-def train_snn(net, 
+def train_snn(net: ConfigurableSpikingNeuralNet, 
             num_epochs, 
             sparsity: float=0,
             time_steps = TIME_STEPS,
@@ -123,12 +71,12 @@ def train_snn(net,
     early_stopper = EarlyStopping(patience=3, min_delta=0.01)
     
     train_data_loader, test_data_loader = create_data_loader(time_steps=time_steps)
-
+    
     optimizer = torch.optim.Adam(net.parameters(), lr=5e-4, betas=(0.9, 0.999))
 
     loss_history = []
     acc_history = []
-    best_model = None
+    best_model: ConfigurableSpikingNeuralNet = net
     best_test_accuracy = 0
     early_stopped_number_epoch = 0
     epoch_loss_per_time_step = []
@@ -153,13 +101,13 @@ def train_snn(net,
 
             total_samples += batch_size
 
-            if loss_per_time_step:
+            if loss_per_time_step and loss_per_time_step_hist:
                 loss_per_time_step_hist.append(loss_per_time_step)
             else:
                 loss_per_time_step_hist = False
 
         if loss_per_time_step_hist:
-            epoch_loss_per_time_step.append(compute_epoch_loss_per_time_step_data(loss_per_time_step_hist, epoch=epoch, time_steps=time_steps))
+            epoch_loss_per_time_step.append(compute_epoch_loss_per_time_step(loss_per_time_step_hist, epoch=epoch, time_steps=time_steps))
         
         test_accuracy = compute_test_set_accuracy(test_data_loader, net, population_coding=loss_configuration=='population_coding')
         avg_epoch_loss = epoch_loss / total_samples
@@ -193,7 +141,7 @@ def train_snn(net,
             
     if sparsity != 0:
         best_model = make_pruning_permanent(best_model)
-        print_sparsity(best_model)
+        print_model_sparsity(best_model)
 
     end = datetime.now()
     time_diff = end - start
@@ -204,12 +152,10 @@ def train_snn(net,
         if epoch_loss_per_time_step:
             save_loss_per_time_step_plot(epoch_loss_per_time_step, path=f'{save_plots}_loss_per_time_steps.png')
 
-    test_accuracy = compute_test_set_accuracy(test_data_loader, net, population_coding=loss_configuration=='population_coding')
-
     data = {
         'epochs': early_stopped_number_epoch if num_epochs == 'early_stopping' else num_epochs,
         'training_accuracy': acc_history[-1],
-        'test_accuracy': test_accuracy,
+        'test_accuracy': best_test_accuracy,
         'time':  time_diff.total_seconds(),
         **additional_output_information
     }

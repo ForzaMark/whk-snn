@@ -4,7 +4,7 @@ import torch
 from constants import TIME_STEPS
 from tonic import datasets, transforms
 from torch.utils.data import DataLoader
-from util.utils import get_device
+from util.get_device import get_device
 
 
 def load_test_data():
