@@ -2,15 +2,12 @@ from constants import NUMBER_INPUT_NEURONS, NUMBER_OUTPUT_NEURONS, THRESHOLD, TI
 from neural_nets.configurable_spiking_neural_net import ConfigurableSpikingNeuralNet
 from training.train_snn import train_snn
 
-num_epochs = 30
+num_epochs = 'early_stopping'
 sparsity = 0
 threshold = 1
-# BETAS = [0.99, 0.8]
-BETAS = [0.99]
-NUMBER_HIDDEN_LAYERS = [1]
-# NUMBER_HIDDEN_LAYERS = [1,2]
-NUMBER_HIDDEN_NEURONS = [1000]
-# NUMBER_HIDDEN_NEURONS = [1000, 3000]
+BETAS = [0.99, 0.8]
+NUMBER_HIDDEN_LAYERS = [1,2]
+NUMBER_HIDDEN_NEURONS = [1000, 3000]
 
 for beta in BETAS:
     for number_hidden_layer in NUMBER_HIDDEN_LAYERS:
@@ -36,4 +33,3 @@ for beta in BETAS:
                     save_model=f'./models/experiments_population_coding/population_coding_beta_{beta}_hidden_layer_{number_hidden_layer}_hidden_neurons_{number_hidden_neurons}',
                     save_plots=f'./output/experiments_population_coding/population_coding_beta_{beta}_hidden_layer_{number_hidden_layer}_hidden_neurons_{number_hidden_neurons}'
             )
-

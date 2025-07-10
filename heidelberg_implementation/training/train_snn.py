@@ -5,7 +5,7 @@ from typing import Union
 
 import numpy as np
 import torch
-from constants import DEVICE, TIME_STEPS
+from constants import DEVICE, HEIDELBERG_DATASET_NUMBER_CLASSES, TIME_STEPS
 from snntorch import functional as SF
 from training.pruning import apply_random_weight_pruning_mask, make_pruning_permanent
 from util.calculate_loss import Loss_Configuration, calculate_loss
@@ -29,26 +29,28 @@ def compute_epoch_loss_per_time_step_data(loss_per_time_step_hist, epoch, time_s
         'loss_per_time_step_averaged_element': averaged_element
     })
 
-def compute_test_set_accuracy(test_data_generator, net):
-    total = 0
-    correct = 0
-
+def compute_test_set_accuracy(test_data_generator, net, population_coding):
     with torch.no_grad():
         net.eval()
+
+        per_batch_test_acc = []
+
         for data, targets in test_data_generator:
             data = data.to_dense().to(torch.float32).squeeze().permute(1, 0, 2).to(DEVICE)
             targets = targets.to(DEVICE)
 
             test_spk_recs, _ = net(data)
 
-            output_test_spk = test_spk_recs[-1]
+            output_spk_recs = test_spk_recs[-1]
 
-            _, predicted = output_test_spk.sum(dim=0).max(1)
-            total += targets.size(0)
-            correct += (predicted == targets).sum().item()
+            if population_coding:
+                acc = SF.accuracy_rate(output_spk_recs, targets, population_code=True, num_classes=HEIDELBERG_DATASET_NUMBER_CLASSES)
+                per_batch_test_acc.append(acc)
+            else:
+                acc = SF.accuracy_rate(output_spk_recs, targets)
+                per_batch_test_acc.append(acc)
 
-
-    return 100 * correct / total
+    return np.mean(per_batch_test_acc)
 
 def calculate_gradient(optimizer, loss_val):
     optimizer.zero_grad()
@@ -80,8 +82,13 @@ def train(data, targets, net, optimizer, loss_configuration: Loss_Configuration,
 
     calculate_gradient(optimizer=optimizer, loss_val=loss)
     update_weights(optimizer=optimizer)
-    
-    acc = SF.accuracy_rate(output_spk_rec, targets)
+
+    acc = 0
+
+    if loss_configuration == 'population_coding':
+        acc = SF.accuracy_rate(output_spk_rec, targets, population_code=True, num_classes=HEIDELBERG_DATASET_NUMBER_CLASSES)
+    else:
+        acc = SF.accuracy_rate(output_spk_rec, targets)
 
     return loss.item(), acc, loss_per_time_step
 
@@ -111,7 +118,6 @@ def train_snn(net,
             loss_configuration: Loss_Configuration ='membrane_potential_cross_entropy'):
     
     if sparsity != 0:
-        print('apply weight pruning')
         net = apply_random_weight_pruning_mask(net, sparsity)
 
     early_stopper = EarlyStopping(patience=3, min_delta=0.01)
@@ -154,7 +160,8 @@ def train_snn(net,
 
         if loss_per_time_step_hist:
             epoch_loss_per_time_step.append(compute_epoch_loss_per_time_step_data(loss_per_time_step_hist, epoch=epoch, time_steps=time_steps))
-        test_accuracy = compute_test_set_accuracy(test_data_loader, net)
+        
+        test_accuracy = compute_test_set_accuracy(test_data_loader, net, population_coding=loss_configuration=='population_coding')
         avg_epoch_loss = epoch_loss / total_samples
         avg_epoch_train_acc = epoch_acc / total_samples
 
@@ -197,12 +204,12 @@ def train_snn(net,
         if epoch_loss_per_time_step:
             save_loss_per_time_step_plot(epoch_loss_per_time_step, path=f'{save_plots}_loss_per_time_steps.png')
 
-    test_set_accuracy = compute_test_set_accuracy(test_data_loader, best_model)
+    test_accuracy = compute_test_set_accuracy(test_data_loader, net, population_coding=loss_configuration=='population_coding')
 
     data = {
         'epochs': early_stopped_number_epoch if num_epochs == 'early_stopping' else num_epochs,
         'training_accuracy': acc_history[-1],
-        'test_accuracy': test_set_accuracy,
+        'test_accuracy': test_accuracy,
         'time':  time_diff.total_seconds(),
         **additional_output_information
     }
