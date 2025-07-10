@@ -14,12 +14,12 @@ from util.early_stopping import EarlyStopping
 from util.utils import save_history_plot, save_loss_per_time_step_plot
 
 
-def compute_epoch_loss_per_time_step_data(loss_per_time_step_hist, epoch):
+def compute_epoch_loss_per_time_step_data(loss_per_time_step_hist, epoch, time_steps):
     last_element = loss_per_time_step_hist[-1]
     first_element = loss_per_time_step_hist[0]
     averaged_element = []
 
-    for i in range(TIME_STEPS):
+    for i in range(time_steps):
         averaged_element.append(np.mean(np.array(loss_per_time_step_hist)[:, i]))
 
     return ({
@@ -57,7 +57,7 @@ def calculate_gradient(optimizer, loss_val):
 def update_weights(optimizer):
     optimizer.step()
 
-def train(data, targets, net, optimizer, loss_configuration: Loss_Configuration):
+def train(data, targets, net, optimizer, loss_configuration: Loss_Configuration, time_steps):
     data = data.to_dense().to(torch.float32).squeeze().permute(1, 0, 2).to(DEVICE)
     targets = targets.to(DEVICE)
 
@@ -68,7 +68,7 @@ def train(data, targets, net, optimizer, loss_configuration: Loss_Configuration)
 
     loss_result = calculate_loss(loss_configuration, 
                                  targets, 
-                                 TIME_STEPS, 
+                                 time_steps, 
                                  output_mem_rec, 
                                  output_spk_rec)
 
@@ -102,6 +102,7 @@ def print_sparsity(model):
 def train_snn(net, 
             num_epochs, 
             sparsity: float=0,
+            time_steps = TIME_STEPS,
             save_model: Union[bool, str]=False, 
             save_model_per_epoch: Union[bool, str]=False,
             save_plots: Union[bool, str]=False, 
@@ -115,7 +116,7 @@ def train_snn(net,
 
     early_stopper = EarlyStopping(patience=3, min_delta=0.01)
     
-    train_data_loader, test_data_loader = create_data_loader()
+    train_data_loader, test_data_loader = create_data_loader(time_steps=time_steps)
 
     optimizer = torch.optim.Adam(net.parameters(), lr=5e-4, betas=(0.9, 0.999))
 
@@ -137,7 +138,7 @@ def train_snn(net,
         epoch_acc = 0.0
 
         for data, targets in train_data_loader:
-            loss_val, acc, loss_per_time_step = train(data, targets, net, optimizer, loss_configuration)
+            loss_val, acc, loss_per_time_step = train(data, targets, net, optimizer, loss_configuration, time_steps)
 
             batch_size = data.size(0)
 
@@ -152,7 +153,7 @@ def train_snn(net,
                 loss_per_time_step_hist = False
 
         if loss_per_time_step_hist:
-            epoch_loss_per_time_step.append(compute_epoch_loss_per_time_step_data(loss_per_time_step_hist, epoch=epoch))
+            epoch_loss_per_time_step.append(compute_epoch_loss_per_time_step_data(loss_per_time_step_hist, epoch=epoch, time_steps=time_steps))
         test_accuracy = compute_test_set_accuracy(test_data_loader, net)
         avg_epoch_loss = epoch_loss / total_samples
         avg_epoch_train_acc = epoch_acc / total_samples

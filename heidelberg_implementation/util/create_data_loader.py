@@ -2,12 +2,13 @@ from constants import BATCH_SIZE, TIME_STEPS
 from tonic import datasets, transforms
 from torch.utils.data import DataLoader
 
-frame_transform = transforms.ToFrame(
+create_frame_transform = lambda time_steps: transforms.ToFrame(
     sensor_size=datasets.SHD.sensor_size,  
-    n_time_bins=TIME_STEPS
+    n_time_bins=time_steps
 )
 
-def create_data_loader():
+def create_data_loader(time_steps = TIME_STEPS):
+    frame_transform = create_frame_transform(time_steps=time_steps)
     train_data = datasets.SHD("./data", transform=frame_transform, train=True)
     test_data = datasets.SHD("./data", transform=frame_transform, train=False)
     
