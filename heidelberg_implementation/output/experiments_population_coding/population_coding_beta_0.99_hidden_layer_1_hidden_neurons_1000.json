@@ -1,8 +1,8 @@
 {
-    "epochs": 1,
-    "training_accuracy": 0.0,
-    "test_accuracy": 0.0,
-    "time": 1312.854504,
+    "epochs": 17,
+    "training_accuracy": 0.9241049534085336,
+    "test_accuracy": 0.6938086854460094,
+    "time": 2036.034253,
     "loss_config": "population_coding",
     "beta": 0.99,
     "number_hidden_layer": 1,
