@@ -1,0 +1,14 @@
+{
+    "number_input_neurons": 700,
+    "number_hidden_neurons": 1000,
+    "number_output_neurons": 20,
+    "beta": 0.6,
+    "threshold": 1,
+    "time_steps": 100,
+    "number_hidden_layers": 2,
+    "epochs": 11,
+    "sparsity": 0,
+    "loss_configuration": "membrane_potential_cross_entropy",
+    "best_test_accuracy": 0.4196009389671362,
+    "training_accuracy": 0.525
+}
