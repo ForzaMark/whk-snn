@@ -8,16 +8,18 @@ from snntorch import surrogate
 
 
 class ConfigurableSpikingNeuralNet(nn.Module):
-    def __init__(self, 
-                 number_input_neurons, 
-                 number_hidden_neurons, 
-                 number_output_neurons, 
-                 beta, 
-                 threshold,
-                 time_steps, 
-                 number_hidden_layers,
-                 surrogate_approximation = surrogate.atan(alpha = ATAN_ALPHA),
-                 population_coding: Union[int, bool] = False):
+    def __init__(
+        self,
+        number_input_neurons,
+        number_hidden_neurons,
+        number_output_neurons,
+        beta,
+        threshold,
+        time_steps,
+        number_hidden_layers,
+        surrogate_approximation=surrogate.atan(alpha=ATAN_ALPHA),
+        population_coding: Union[int, bool] = False,
+    ):
         super().__init__()
 
         self.time_steps = time_steps
@@ -27,22 +29,37 @@ class ConfigurableSpikingNeuralNet(nn.Module):
         layers = []
 
         layers.append(nn.Linear(number_input_neurons, number_hidden_neurons))
-        self.lifs.append(snn.Leaky(beta=beta, threshold=threshold, spike_grad=surrogate_approximation))
+        self.lifs.append(
+            snn.Leaky(
+                beta=beta, threshold=threshold, spike_grad=surrogate_approximation
+            )
+        )
 
         for _ in range(number_hidden_layers - 1):
             layers.append(nn.Linear(number_hidden_neurons, number_hidden_neurons))
-            self.lifs.append(snn.Leaky(beta=beta, threshold=threshold, spike_grad=surrogate_approximation))
+            self.lifs.append(
+                snn.Leaky(
+                    beta=beta, threshold=threshold, spike_grad=surrogate_approximation
+                )
+            )
 
         if population_coding is False:
             layers.append(nn.Linear(number_hidden_neurons, number_output_neurons))
         else:
-            assert isinstance(population_coding, int) and population_coding > number_output_neurons
+            assert (
+                isinstance(population_coding, int)
+                and population_coding > number_output_neurons
+            )
             layers.append(nn.Linear(number_hidden_neurons, population_coding))
-        
-        self.lifs.append(snn.Leaky(beta=beta, threshold=threshold, spike_grad=surrogate_approximation))
+
+        self.lifs.append(
+            snn.Leaky(
+                beta=beta, threshold=threshold, spike_grad=surrogate_approximation
+            )
+        )
 
         self.linears = nn.ModuleList(layers)
-    
+
     def forward(self, x):
         mems = []
 
@@ -66,5 +83,6 @@ class ConfigurableSpikingNeuralNet(nn.Module):
                 all_spk_recordings[i].append(spk)
                 all_mem_recordings[i].append(mem)
 
-        return [torch.stack(spk_recording, dim=0) for spk_recording in  all_spk_recordings], \
-               [torch.stack(mem_recording, dim=0) for mem_recording in all_mem_recordings]
+        return [
+            torch.stack(spk_recording, dim=0) for spk_recording in all_spk_recordings
+        ], [torch.stack(mem_recording, dim=0) for mem_recording in all_mem_recordings]

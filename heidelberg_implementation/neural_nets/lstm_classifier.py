@@ -1,4 +1,3 @@
-
 import torch
 import torch.nn as nn
 
@@ -10,8 +9,7 @@ class LSTMClassifier(nn.Module):
         self.lstm = nn.LSTM(input_size, hidden_size, num_layers)
         self.fc = nn.Linear(hidden_size, num_classes)
 
-    
     def forward(self, x):
-        lstm_out, _ = self.lstm(x)         
+        lstm_out, _ = self.lstm(x)
         out = self.fc(torch.mean(lstm_out, dim=0))
         return out

@@ -3,22 +3,25 @@ import torch.nn as nn
 
 
 def conv_block():
-            return nn.Sequential(
-                nn.Conv2d(32, 32, kernel_size=3),
-                nn.BatchNorm2d(32),
-                nn.ReLU(),
-                nn.Conv2d(32, 32, kernel_size=3),
-                nn.BatchNorm2d(32),
-                nn.ReLU(),
-                nn.MaxPool2d(kernel_size=2),
-                nn.Dropout(0.2)
-            )
+    return nn.Sequential(
+        nn.Conv2d(32, 32, kernel_size=3),
+        nn.BatchNorm2d(32),
+        nn.ReLU(),
+        nn.Conv2d(32, 32, kernel_size=3),
+        nn.BatchNorm2d(32),
+        nn.ReLU(),
+        nn.MaxPool2d(kernel_size=2),
+        nn.Dropout(0.2),
+    )
+
 
 class CNN_Classifier(nn.Module):
     def __init__(self, input_channels, num_classes):
         super(CNN_Classifier, self).__init__()
 
-        self.conv1 = nn.Conv2d(in_channels=input_channels, out_channels=32, kernel_size=11)
+        self.conv1 = nn.Conv2d(
+            in_channels=input_channels, out_channels=32, kernel_size=11
+        )
         self.relu1 = nn.ReLU()
 
         self.conv_block1 = conv_block()
