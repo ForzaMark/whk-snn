@@ -1,0 +1,10 @@
+{
+    "epochs": 16,
+    "training_accuracy": 0.9844286414909269,
+    "test_accuracy": 0.7168427230046949,
+    "time": 8753.863089,
+    "loss_config": "population_coding",
+    "beta": 0.8,
+    "number_hidden_layer": 2,
+    "number_hidden_neurons": 3000
+}

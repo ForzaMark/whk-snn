@@ -93,7 +93,6 @@ def train_snn(net: ConfigurableSpikingNeuralNet,
 
         for data, targets in train_data_loader:
             loss_val, acc, loss_per_time_step = train(data, targets, net, optimizer, loss_configuration, time_steps)
-
             batch_size = data.size(0)
 
             epoch_loss += loss_val * batch_size
@@ -132,12 +131,15 @@ def train_snn(net: ConfigurableSpikingNeuralNet,
                 early_stopped_number_epoch = epoch
                 break
         else:
-            best_model = copy.deepcopy(net)
+            best_model = net
 
         if isinstance(save_model_per_epoch, str):
+            best_model_to_be_saved = copy.deepcopy(best_model)
+
             if sparsity != 0:
-                best_model = make_pruning_permanent(best_model)
-            torch.save(best_model.state_dict(), f'{save_model_per_epoch}_epoch_{epoch}.pth')
+                best_model_to_be_saved = make_pruning_permanent(best_model_to_be_saved)
+
+            torch.save(best_model_to_be_saved.state_dict(), f'{save_model_per_epoch}_epoch_{epoch}.pth')
             
     if sparsity != 0:
         best_model = make_pruning_permanent(best_model)
