@@ -8,14 +8,14 @@ def collapse_time_dimension(data_loader):
     X = []
     Y = []
 
-    for x,y in data_loader:
+    for x, y in data_loader:
 
         for batch_item in range(x.size(0)):
-            item = x[batch_item]  
+            item = x[batch_item]
             y_item = y[batch_item]
             item = item.squeeze(1)
 
-            feature_vector = [] 
+            feature_vector = []
 
             for neuron_idx in range(item.size(1)):
                 neuron_values = item[:, neuron_idx].sum().item()
@@ -26,9 +26,13 @@ def collapse_time_dimension(data_loader):
 
     return X, Y
 
+
 CLASSIFIERS = [
-    ('logistic regression', LogisticRegression(multi_class='multinomial', solver='lbfgs', max_iter=5000)),
-    ('svm', SVC())
+    (
+        "logistic regression",
+        LogisticRegression(multi_class="multinomial", solver="lbfgs", max_iter=5000),
+    ),
+    ("svm", SVC()),
 ]
 
 if __name__ == "__main__":
@@ -38,7 +42,7 @@ if __name__ == "__main__":
     x_test, y_test = collapse_time_dimension(test_data_loader)
 
     for name, clf in CLASSIFIERS:
-        print(f'### classification {name} ###')
+        print(f"### classification {name} ###")
         clf.fit(x_train, y_train)
 
         y_pred = clf.predict(x_test)

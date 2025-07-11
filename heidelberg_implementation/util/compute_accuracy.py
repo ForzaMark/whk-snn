@@ -16,7 +16,12 @@ def compute_accuracy(data, targets, net, population_coding):
         output_spk_rec = spk_recs[-1]
 
         if population_coding:
-            acc = SF.accuracy_rate(output_spk_rec, targets, population_code=True, num_classes=HEIDELBERG_DATASET_NUMBER_CLASSES)
+            acc = SF.accuracy_rate(
+                output_spk_rec,
+                targets,
+                population_code=True,
+                num_classes=HEIDELBERG_DATASET_NUMBER_CLASSES,
+            )
         else:
             acc = SF.accuracy_rate(output_spk_rec, targets)
 
@@ -30,6 +35,8 @@ def compute_test_set_accuracy(test_data_generator, net, population_coding):
         per_batch_test_acc = []
 
         for data, targets in test_data_generator:
-            per_batch_test_acc.append(compute_accuracy(data, targets, net, population_coding))
+            per_batch_test_acc.append(
+                compute_accuracy(data, targets, net, population_coding)
+            )
 
     return np.mean(per_batch_test_acc)

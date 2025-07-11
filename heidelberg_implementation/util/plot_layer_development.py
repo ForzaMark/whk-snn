@@ -11,8 +11,7 @@ def load_test_data():
     device = get_device()
 
     frame_transform = transforms.ToFrame(
-        sensor_size=datasets.SHD.sensor_size,  
-        n_time_bins=TIME_STEPS
+        sensor_size=datasets.SHD.sensor_size, n_time_bins=TIME_STEPS
     )
 
     test_data = datasets.SHD("./data", transform=frame_transform, train=False)
@@ -30,11 +29,15 @@ def get_spk_matrices(data, model, selection_index):
     spk_recs, _ = model(data)
 
     output_spk_rec = spk_recs[-1][:, selection_index, :]
-    hidden_spk_rec = [hidden_spk_rec[:, selection_index, :].detach() for hidden_spk_rec in spk_recs[:-1]]
+    hidden_spk_rec = [
+        hidden_spk_rec[:, selection_index, :].detach()
+        for hidden_spk_rec in spk_recs[:-1]
+    ]
 
     return [x_selected, *hidden_spk_rec, output_spk_rec.detach()]
 
-def plot_layer_development(models, sub_titles, super_title=None, selection_index = 2):
+
+def plot_layer_development(models, sub_titles, super_title=None, selection_index=2):
     data = load_test_data()
 
     spike_matrices = [
@@ -47,19 +50,21 @@ def plot_layer_development(models, sub_titles, super_title=None, selection_index
     nrows = len(spike_matrices) if len(spike_matrices) > 1 else 2
     ncols = len(spike_matrices[0])
 
-    figsize = (ncols*5, nrows*6)
+    figsize = (ncols * 5, nrows * 6)
 
     fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
 
     if super_title:
         fig.suptitle(super_title, fontsize=16)
 
-    for row_index, (spike_matrix, sub_title) in enumerate(zip(spike_matrices, sub_titles)):
+    for row_index, (spike_matrix, sub_title) in enumerate(
+        zip(spike_matrices, sub_titles)
+    ):
         for column_index in range(len(spike_matrices[0])):
             spike_matrix_np = spike_matrix[column_index].numpy()
             times, neurons = np.where(spike_matrix_np == 1)
             ax = axes[row_index, column_index]
-            ax.scatter(times, neurons, s=1, color='black')
+            ax.scatter(times, neurons, s=1, color="black")
             ax.set_title(f"{sub_title} - Layer {column_index}")
             ax.set_xlabel("Time step")
             ax.set_ylim(-1, spike_matrix_np.shape[1])
