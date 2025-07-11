@@ -8,9 +8,9 @@ from constants import (
 from neural_nets.configurable_spiking_neural_net import ConfigurableSpikingNeuralNet
 from training.train_snn import train_snn
 
-num_epochs = 2
-sparsity = 0.2
-number_hidden_neurons = 100
+num_epochs = 500
+sparsity = 0
+number_hidden_neurons = 1000
 number_hidden_layer = 1
 
 model = ConfigurableSpikingNeuralNet(
@@ -31,9 +31,9 @@ train_snn(
         "number_hidden_neurons": int(number_hidden_neurons),
         "number_hidden_layer": int(number_hidden_layer),
     },
-    save_model="./models/generic_test_model",
-    save_model_per_epoch="./models/generic_test_model",
+    save_model="./models/experiment_point_of_chaos/500_epochs",
+    save_model_per_epoch="./models/experiment_point_of_chaos/500_epochs",
     loss_configuration="membrane_potential_cross_entropy",
-    save_plots="./output/generic_test",
-    output_file_path=f"./output/generic_output.json",
+    save_plots="./output/experiments_point_of_chaos/500_epochs",
+    output_file_path=f"./output/experiments_point_of_chaos/500_epochs",
 )
