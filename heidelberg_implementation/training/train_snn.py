@@ -78,7 +78,7 @@ def evaluate_loop_condition(num_epochs, current_epoch, early_stopper):
     if num_epochs == "early_stopping":
         return not early_stopper.early_stop
     else:
-        return num_epochs <= current_epoch
+        return current_epoch <= num_epochs
 
 
 def train_snn(
