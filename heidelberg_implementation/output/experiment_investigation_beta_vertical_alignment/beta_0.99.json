@@ -2,13 +2,13 @@
     "number_input_neurons": 700,
     "number_hidden_neurons": 1000,
     "number_output_neurons": 20,
-    "beta": 0.6,
+    "beta": 0.99,
     "threshold": 1,
     "time_steps": 100,
     "number_hidden_layers": 2,
     "epochs": 11,
     "sparsity": 0,
     "loss_configuration": "membrane_potential_cross_entropy",
-    "best_test_accuracy": 0.38497652582159625,
-    "training_accuracy": 0.435
+    "best_test_accuracy": 0.6423122065727699,
+    "training_accuracy": 0.75
 }
