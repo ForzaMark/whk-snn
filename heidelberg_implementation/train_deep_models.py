@@ -42,7 +42,7 @@ def create_data_loader(X, Y):
     y = torch.tensor(Y, dtype=torch.long)
 
     dataset = TensorDataset(X, y)
-    loader = DataLoader(dataset, batch_size=1)
+    loader = DataLoader(dataset, batch_size=32)
 
     return loader
 
@@ -138,7 +138,7 @@ num_epochs = 10
 
 if __name__ == "__main__":
 
-    for mode in ["cnn", "lstm"]:
+    for mode in ["lstm", "cnn"]:
         model = (
             CNN_Classifier(
                 input_channels=1, num_classes=HEIDELBERG_DATASET_NUMBER_CLASSES
@@ -164,7 +164,9 @@ if __name__ == "__main__":
             for X_batch, y_batch in train_loader:
                 X_batch = preprocess_batches(X_batch)
                 output = model(X_batch)
-
+                print(output.shape)
+                print(y_batch.shape)
+                print("--------")
                 loss = loss_function(output, y_batch)
 
                 optimizer.zero_grad()

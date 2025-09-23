@@ -30,6 +30,8 @@ class RSNN(nn.Module):
         hidden_spikes = []
         hidden_membrane_potential = []
 
+        self.lif_hidden.init_leaky()
+
         for t in range(time_steps):
             x_t = x[:, t, :]
 
