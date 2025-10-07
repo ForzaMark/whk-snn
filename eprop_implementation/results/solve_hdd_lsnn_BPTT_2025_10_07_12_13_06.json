@@ -1,0 +1,46 @@
+{
+    "batch": 32,
+    "lr_init": 0.01,
+    "lr_decay": 0.3,
+    "reg_rate": 10,
+    "drop_out_probability": -1.0,
+    "tau_a": 200,
+    "tau_v": 5,
+    "thr": 1,
+    "dt": 1.0,
+    "beta": 1.8,
+    "n_regular": 500,
+    "n_adaptive": 200,
+    "n_layer": 1,
+    "dampening_factor": 0.3,
+    "n_ref": 2,
+    "rec": true,
+    "psp_out": true,
+    "tau_out": 3,
+    "l2": 1e-05,
+    "adam_epsilon": 1e-05,
+    "momentum": 0.9,
+    "print_every": 100,
+    "test_batch": 32,
+    "reg": 50,
+    "n_epochs": 2,
+    "eprop": null,
+    "complete_time": 199.82851338386536,
+    "results": [
+        {
+            "train_loss": null,
+            "train_acc": null,
+            "test_acc": 0.037998829036951065
+        },
+        {
+            "train_loss": 1.7542619705200195,
+            "train_acc": 0.43435657024383545,
+            "test_acc": 0.5754108428955078
+        },
+        {
+            "train_loss": 0.8278241753578186,
+            "train_acc": 0.7110778093338013,
+            "test_acc": 0.627200722694397
+        }
+    ]
+}

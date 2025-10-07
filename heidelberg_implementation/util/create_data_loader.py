@@ -11,7 +11,7 @@ create_frame_transform = lambda time_steps: transforms.ToFrame(
 
 
 def create_data_loader(
-    time_steps=TIME_STEPS, use_train_subset: Union[bool, int] = False
+    time_steps=TIME_STEPS, use_train_subset: Union[bool, int] = False, batch_size = BATCH_SIZE
 ):
     frame_transform = create_frame_transform(time_steps=time_steps)
     train_data = datasets.SHD("./data", transform=frame_transform, train=True)
@@ -21,7 +21,7 @@ def create_data_loader(
         random_indices = torch.randperm(len(train_data))[:use_train_subset]
         train_data = Subset(train_data, random_indices)
 
-    train_data_loader = DataLoader(train_data, shuffle=False, batch_size=BATCH_SIZE)
-    test_data_loader = DataLoader(test_data, shuffle=False, batch_size=BATCH_SIZE)
+    train_data_loader = DataLoader(train_data, shuffle=False, batch_size=batch_size)
+    test_data_loader = DataLoader(test_data, shuffle=False, batch_size=batch_size)
 
     return train_data_loader, test_data_loader

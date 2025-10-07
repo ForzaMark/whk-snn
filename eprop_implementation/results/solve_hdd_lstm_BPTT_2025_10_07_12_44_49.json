@@ -1,0 +1,1 @@
+{"eprop": null, "n_epochs": 2, "complete_time": 158.44517302513123, "results": [{"train_loss": NaN, "train_acc": NaN, "test_acc": 0.07199646532535553}, {"train_loss": 1.5873183012008667, "train_acc": 0.47019675374031067, "test_acc": 0.5817137956619263}, {"train_loss": 1.112449049949646, "train_acc": 0.6764388680458069, "test_acc": 0.6148409843444824}]}
