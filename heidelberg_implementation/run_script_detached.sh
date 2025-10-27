@@ -1,0 +1,1 @@
+nohup python -u pipeline.py > pipeline.log 2>&1 &
