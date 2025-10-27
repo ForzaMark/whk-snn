@@ -83,6 +83,8 @@ def evaluate_loop_condition(num_epochs, current_epoch, early_stopper):
 
 def train_snn(
     net: ConfigurableSpikingNeuralNet,
+    train_data_loader,
+    test_data_loader,
     num_epochs,
     sparsity: float = 0,
     time_steps=TIME_STEPS,
@@ -94,10 +96,6 @@ def train_snn(
         net = apply_random_weight_pruning_mask(net, sparsity)
 
     early_stopper = EarlyStopping(patience=3, min_delta=0.01)
-
-    train_data_loader, test_data_loader = create_data_loader(
-        time_steps=time_steps, use_train_subset=use_train_data_subset
-    )
 
     optimizer = torch.optim.Adam(net.parameters(), lr=5e-4, betas=(0.9, 0.999))
 
