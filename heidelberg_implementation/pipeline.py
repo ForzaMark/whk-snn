@@ -12,7 +12,7 @@ from eprop.solve_hdd_with_lstm import run_eprop_lstm
 from machine_learning.run_logistic_regression import run_logistic_regression
 from machine_learning.run_svm import run_svm
 from spiking_neural_networks.run_snn import run_snn
-from util.create_data_loader import create_data_loader, load_train_test_data_deep_models
+from util.create_data_loader import create_data_loader, create_data_loader_deep_models
 
 
 def create_result_plot(results):
@@ -44,10 +44,10 @@ if __name__ == "__main__":
 
     print("######### Loading data #########")
     train_data_loader, test_data_loader = create_data_loader()
-    train_data_loader_cnn, test_data_loader_cnn = load_train_test_data_deep_models(
+    train_data_loader_cnn, test_data_loader_cnn = create_data_loader_deep_models(
         mode="cnn"
     )
-    train_data_loader_lstm, test_data_loader_lstm = load_train_test_data_deep_models(
+    train_data_loader_lstm, test_data_loader_lstm = create_data_loader_deep_models(
         mode="lstm"
     )
 

@@ -33,7 +33,7 @@ def create_data_loader(
     return train_data_loader, test_data_loader
 
 
-def create_data_loader_deep_models(X, Y, batch_size=32):
+def data_loader_factory(X, Y, batch_size=32):
     X = torch.tensor(X, dtype=torch.float32)
     y = torch.tensor(Y, dtype=torch.long)
 
@@ -43,7 +43,7 @@ def create_data_loader_deep_models(X, Y, batch_size=32):
     return loader
 
 
-def load_train_test_data_deep_models(mode, use_train_subset=None):
+def create_data_loader_deep_models(mode, use_train_subset=None):
     train_data = datasets.SHD("./data", train=True)
     test_data = datasets.SHD("./data", train=False)
 
@@ -58,11 +58,8 @@ def load_train_test_data_deep_models(mode, use_train_subset=None):
         x_train = bin_features_into_64_space_bins(x_train)
         x_test = bin_features_into_64_space_bins(x_test)
 
-    train_loader = create_data_loader_deep_models(
-        x_train, y_train, batch_size=1 if mode == "cnn" else 32
-    )
-    test_loader = create_data_loader_deep_models(
-        x_test, y_test, batch_size=1 if mode == "cnn" else 32
-    )
+    batch_size = BATCH_SIZE if mode == "lstm" else 1
+    train_loader = data_loader_factory(x_train, y_train, batch_size=batch_size)
+    test_loader = data_loader_factory(x_test, y_test, batch_size=batch_size)
 
     return train_loader, test_loader

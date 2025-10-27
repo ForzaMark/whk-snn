@@ -1,11 +1,5 @@
 import numpy as np
-from constants import (
-    BETA,
-    NUMBER_INPUT_NEURONS,
-    NUMBER_OUTPUT_NEURONS,
-    THRESHOLD,
-    TIME_STEPS,
-)
+from constants import NUMBER_INPUT_NEURONS, NUMBER_OUTPUT_NEURONS, TIME_STEPS
 from neural_nets.configurable_spiking_neural_net import ConfigurableSpikingNeuralNet
 from training.train_snn import train_snn
 

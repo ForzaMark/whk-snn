@@ -1,16 +1,9 @@
-import errno
-import json
-import os
-import time
-from datetime import datetime
-
 import numpy as np
 import numpy.random as rd
 import tensorflow as tf
 
 from .util.hdd_dataset import HDD_Dataset
 from .util.lstm_eprop_model import CustomLSTM
-from .util.save_experiment_results import save_experiment_results
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -51,14 +44,14 @@ tf.app.flags.DEFINE_string(
 )
 tf.app.flags.DEFINE_bool("adam", True, "use ADAM instead of standard SGD")
 tf.app.flags.DEFINE_bool("lstm", True, "plot regularly the predicitons")
-#
+
 tf.app.flags.DEFINE_integer("seed", -1, "seed number")
 tf.app.flags.DEFINE_integer("n_epochs", 30, "number of iteration ")
 tf.app.flags.DEFINE_integer("n_lstm", 200, "number of lstm cells")
 tf.app.flags.DEFINE_integer("print_every", 100, "print every and store accuracy")
 tf.app.flags.DEFINE_integer("lr_decay_every", 500, "Decay every")
 tf.app.flags.DEFINE_integer("batch", 32, "mini_batch size")
-#
+
 tf.app.flags.DEFINE_float(
     "init_scale", 0.0, "Provide the scaling of the weights at initialization"
 )
@@ -147,9 +140,6 @@ sess.run(tf.global_variables_initializer())
 overall_results = []
 test_result_tensors = {"loss": loss, "acc": acc}
 train_result_tensors = {"loss": loss, "acc": acc}
-
-
-t0 = time.time()
 
 
 def run_eprop_lstm():

@@ -1,22 +1,14 @@
-import errno
-import json
-import os
-import time
-from datetime import datetime
-
 import numpy as np
 import numpy.random as rd
 import tensorflow as tf
 
-from .util.alif_eligibility_propagation import exp_convolve
 from .util.configuration import FLAGS
 from .util.get_cell import get_cell
 from .util.hdd_dataset import HDD_Dataset
 from .util.rate_coding_loss_last_output import rate_coding_loss_last_output
-from .util.save_experiment_results import save_experiment_results
 
 N_EPOCHS = 30
-EPROP = "symmetric"  # 'symmetric' for eprop
+EPROP = "symmetric"
 
 
 FLAGS = {
@@ -117,11 +109,6 @@ def compute_result(type, test_result_tensors, sess):
 
 
 def run_eprop_lsnn():
-    regularization_f0 = FLAGS["reg_rate"] / 1000
-
-    taua = FLAGS["tau_a"]
-    tauv = FLAGS["tau_v"]
-
     cell_forward = get_cell("FW", n_in, FLAGS)
 
     with tf.variable_scope("RNNs"):
@@ -221,8 +208,6 @@ def run_eprop_lsnn():
 
     print(f'E-Prop: {FLAGS["eprop"]} | n_layers: {FLAGS["n_layer"]}')
 
-    t0 = time.time()
-
     while dataset.current_epoch <= FLAGS["n_epochs"]:
         k_iteration = sess.run(global_step)
 
@@ -268,8 +253,6 @@ def run_eprop_lsnn():
             ),
         )
         train_results.append(train_result)
-
-    complete_time = time.time() - t0
 
     all_test_acc = [result["test_acc"] for result in overall_results]
     return np.max(all_test_acc)
