@@ -4,20 +4,38 @@
 # TODO: unify environments
 # TODO: how to portability
 
+from deep_learning.run_cnn import run_cnn
+from deep_learning.run_lstm import run_lstm
 from machine_learning.run_logistic_regression import run_logistic_regression
 from machine_learning.run_svm import run_svm
-from util.create_data_loader import create_data_loader
+from util.create_data_loader import create_data_loader, load_train_test_data_deep_models
 
 if __name__ == "__main__":
-    train_data_loader, test_data_loader = create_data_loader(use_train_subset=1000)
+    # train_data_loader, test_data_loader = create_data_loader(use_train_subset=1000)
 
-    svm_acc = run_svm(train_data_loader, test_data_loader)
-    logistic_regression_acc = run_logistic_regression(
-        train_data_loader, test_data_loader
+    # print("ML")
+    # svm_acc = run_svm(train_data_loader, test_data_loader)
+    # logistic_regression_acc = run_logistic_regression(
+    #     train_data_loader, test_data_loader
+    # )
+
+    # print(svm_acc)
+    # print(logistic_regression_acc)
+
+    train_data_loader_cnn, test_data_loader_cnn = load_train_test_data_deep_models(
+        mode="cnn", use_train_subset=1000
+    )
+    train_data_loader_lstm, test_data_loader_lstm = load_train_test_data_deep_models(
+        mode="lstm", use_train_subset=1000
     )
 
-    print(svm_acc)
-    print(logistic_regression_acc)
+    print("CNN")
+    cnn_acc = run_cnn(train_data_loader_cnn, test_data_loader_cnn)
+    print(cnn_acc)
+
+    print("LSTM")
+    lstm_acc = run_lstm(train_data_loader_lstm, test_data_loader_lstm)
+    print(lstm_acc)
 
 
 # run_svm

@@ -37,12 +37,12 @@ def convert_to_time_binned_sequences(data):
     return np.array(X), np.array(Y)
 
 
-def create_data_loader(X, Y):
+def create_data_loader(X, Y, batch_size=32):
     X = torch.tensor(X, dtype=torch.float32)
     y = torch.tensor(Y, dtype=torch.long)
 
     dataset = TensorDataset(X, y)
-    loader = DataLoader(dataset, batch_size=32)
+    loader = DataLoader(dataset, batch_size=batch_size)
 
     return loader
 
@@ -88,8 +88,8 @@ def load_cnn_train_test_data():
     x_train = bin_features_into_64_space_bins(x_train)
     x_test = bin_features_into_64_space_bins(x_test)
 
-    train_loader = create_data_loader(x_train, y_train)
-    test_loader = create_data_loader(x_test, y_test)
+    train_loader = create_data_loader(x_train, y_train, batch_size=1)
+    test_loader = create_data_loader(x_test, y_test, batch_size=1)
 
     return train_loader, test_loader
 
@@ -138,7 +138,7 @@ num_epochs = 10
 
 if __name__ == "__main__":
 
-    for mode in ["lstm", "cnn"]:
+    for mode in ["cnn", "lstm"]:
         model = (
             CNN_Classifier(
                 input_channels=1, num_classes=HEIDELBERG_DATASET_NUMBER_CLASSES
