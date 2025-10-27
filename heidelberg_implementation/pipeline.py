@@ -62,7 +62,7 @@ if __name__ == "__main__":
     results["logistic_regression"] = logistic_regression_acc
 
     print("######### CNN #########")
-    cnn_acc = run_cnn(train_data_loader_cnn, test_data_loader_cnn)
+    cnn_acc = run_cnn(train_data_loader_cnn, test_data_loader_cnn, num_epochs=30)
     results["cnn"] = cnn_acc
 
     print("######### LSTM #########")

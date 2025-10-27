@@ -7,7 +7,7 @@ from .calculate_test_accuracy import calculate_test_accuracy
 
 preprocess_batches_lstm = lambda X_batch: X_batch.permute(1, 0, 2).contiguous()
 
-num_epochs = 10
+num_epochs = 30
 loss_function = nn.CrossEntropyLoss()
 
 
