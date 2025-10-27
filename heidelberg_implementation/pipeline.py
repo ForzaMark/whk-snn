@@ -43,12 +43,12 @@ if __name__ == "__main__":
     results = {}
 
     print("######### Loading data #########")
-    train_data_loader, test_data_loader = create_data_loader(use_train_subset=1000)
+    train_data_loader, test_data_loader = create_data_loader()
     train_data_loader_cnn, test_data_loader_cnn = load_train_test_data_deep_models(
-        mode="cnn", use_train_subset=1000
+        mode="cnn"
     )
     train_data_loader_lstm, test_data_loader_lstm = load_train_test_data_deep_models(
-        mode="lstm", use_train_subset=1000
+        mode="lstm"
     )
 
     print("######### SVM #########")
@@ -77,7 +77,7 @@ if __name__ == "__main__":
         number_hidden_layer=2,
         beta=0.99,
         threshold=1,
-        num_epochs="early_stopping",
+        num_epochs=30,
     )
     results["snn"] = snn_acc
 

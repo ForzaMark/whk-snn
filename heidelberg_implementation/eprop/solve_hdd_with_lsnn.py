@@ -15,7 +15,7 @@ from .util.hdd_dataset import HDD_Dataset
 from .util.rate_coding_loss_last_output import rate_coding_loss_last_output
 from .util.save_experiment_results import save_experiment_results
 
-N_EPOCHS = 10
+N_EPOCHS = 30
 EPROP = "symmetric"  # 'symmetric' for eprop
 
 

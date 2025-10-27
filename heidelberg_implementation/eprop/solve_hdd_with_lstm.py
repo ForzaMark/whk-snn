@@ -53,7 +53,7 @@ tf.app.flags.DEFINE_bool("adam", True, "use ADAM instead of standard SGD")
 tf.app.flags.DEFINE_bool("lstm", True, "plot regularly the predicitons")
 #
 tf.app.flags.DEFINE_integer("seed", -1, "seed number")
-tf.app.flags.DEFINE_integer("n_epochs", 10, "number of iteration ")
+tf.app.flags.DEFINE_integer("n_epochs", 30, "number of iteration ")
 tf.app.flags.DEFINE_integer("n_lstm", 200, "number of lstm cells")
 tf.app.flags.DEFINE_integer("print_every", 100, "print every and store accuracy")
 tf.app.flags.DEFINE_integer("lr_decay_every", 500, "Decay every")
