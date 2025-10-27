@@ -13,7 +13,7 @@ from util.get_cell import get_cell
 from datetime import datetime
 from util.save_experiment_results import save_experiment_results
 
-N_EPOCHS = 2
+N_EPOCHS = 20
 # only symmetric eprop is currently implemented
 # random and adaptive eprop are excluded for simplicity
 EPROP = None # 'symmetric' for eprop
@@ -22,7 +22,9 @@ EPROP = None # 'symmetric' for eprop
 FLAGS = {
     **FLAGS,
     'n_epochs': N_EPOCHS,
-    'eprop': EPROP
+    'eprop': EPROP,
+    'n_regular': 300,
+    'n_adaptive': 100,
 }
 
 dataset = HDD_Dataset(FLAGS["batch"], data_path='./datasets/hdd/full_spiking_data/')
