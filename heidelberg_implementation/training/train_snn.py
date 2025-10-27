@@ -10,7 +10,7 @@ from training.pruning import (
     make_pruning_permanent,
     print_model_sparsity,
 )
-from util.calculate_loss import Loss_Configuration, calculate_loss
+from util.calculate_loss import calculate_loss
 from util.compute_accuracy import compute_accuracy, compute_test_set_accuracy
 from util.compute_epoch_loss_per_time_step import compute_epoch_loss_per_time_step
 from util.create_data_loader import create_data_loader
@@ -31,7 +31,7 @@ def train(
     train_targets,
     net,
     optimizer,
-    loss_configuration: Loss_Configuration,
+    loss_configuration,
     time_steps,
 ):
     data = train_data.to_dense().to(torch.float32).squeeze().permute(1, 0, 2).to(DEVICE)
@@ -88,7 +88,7 @@ def train_snn(
     num_epochs,
     sparsity: float = 0,
     time_steps=TIME_STEPS,
-    loss_configuration: Loss_Configuration = "membrane_potential_cross_entropy",
+    loss_configuration="membrane_potential_cross_entropy",
     use_train_data_subset: Union[bool, int] = False,
 ):
 

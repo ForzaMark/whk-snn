@@ -1,5 +1,3 @@
-from typing import Literal
-
 import torch
 import torch.nn as nn
 from constants import DEVICE, DTYPE, HEIDELBERG_DATASET_NUMBER_CLASSES
@@ -38,13 +36,8 @@ def calculate_population_coding_loss(spk_rec, targets):
     return loss_val
 
 
-Loss_Configuration = Literal[
-    "membrane_potential_cross_entropy", "rate_code_cross_entropy", "population_coding"
-]
-
-
 def calculate_loss(
-    loss_configuration: Loss_Configuration,
+    loss_configuration,
     targets,
     time_steps,
     output_mem_rec,

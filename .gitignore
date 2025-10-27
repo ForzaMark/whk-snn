@@ -2,7 +2,7 @@
 *.hdf5
 
 models
-eprop_implementation/datasets
+heidelberg_implementation/eprop/datasets
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
