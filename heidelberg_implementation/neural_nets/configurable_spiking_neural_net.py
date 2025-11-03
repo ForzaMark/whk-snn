@@ -59,6 +59,13 @@ class ConfigurableSpikingNeuralNet(nn.Module):
         )
 
         self.linears = nn.ModuleList(layers)
+        self._initialize_weights()
+
+    def _initialize_weights(self):
+        for m in self.modules():
+            if isinstance(m, nn.Linear):
+                nn.init.kaiming_normal_(m.weight, nonlinearity="relu")
+                nn.init.zeros_(m.bias)
 
     def forward(self, x):
         mems = []
