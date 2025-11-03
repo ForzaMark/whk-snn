@@ -8,6 +8,13 @@ class LSTMClassifier(nn.Module):
 
         self.lstm = nn.LSTM(input_size, hidden_size, num_layers)
         self.fc = nn.Linear(hidden_size, num_classes)
+        self._initialize_weights()
+
+    def _initialize_weights(self):
+        for m in self.modules():
+            if isinstance(m, nn.Linear):
+                nn.init.kaiming_normal_(m.weight, nonlinearity="relu")
+                nn.init.zeros_(m.bias)
 
     def forward(self, x):
         lstm_out, _ = self.lstm(x)

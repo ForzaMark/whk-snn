@@ -32,6 +32,14 @@ class CNN_Classifier(nn.Module):
         self.relu_fc1 = nn.ReLU()
         self.fc2 = nn.Linear(128, num_classes)
 
+        self._initialize_weights()
+
+    def _initialize_weights(self):
+        for m in self.modules():
+            if isinstance(m, nn.Linear):
+                nn.init.kaiming_normal_(m.weight, nonlinearity="relu")
+                nn.init.zeros_(m.bias)
+
     def forward(self, x):
         x = self.relu1(self.conv1(x))
         x = self.conv_block1(x)

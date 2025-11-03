@@ -1,5 +1,3 @@
-# TODO: vary weight initialization and average results + std
-# TODO: unify environments
 # TODO: how to portability
 
 import matplotlib.pyplot as plt
@@ -86,13 +84,28 @@ if __name__ == "__main__":
     )
     results["logistic_regression"] = logistic_regression_acc
 
-    print("######### CNN #########")
-    cnn_acc = run_cnn(train_data_loader_cnn, test_data_loader_cnn, num_epochs=30)
-    results["cnn"] = cnn_acc
+    averaged_cnn_acc_different_parameter_initialization = []
+    for i in range(5):
+        print(f"####### CNN {i}/5 #######")
+        cnn_acc = run_cnn(train_data_loader_cnn, test_data_loader_cnn, num_epochs=30)
 
-    print("######### LSTM #########")
-    lstm_acc = run_lstm(train_data_loader_lstm, test_data_loader_lstm)
-    results["lstm"] = lstm_acc
+        averaged_cnn_acc_different_parameter_initialization.append(cnn_acc)
+    results["cnn"] = {
+        "mean": np.mean(averaged_cnn_acc_different_parameter_initialization),
+        "std": np.std(averaged_cnn_acc_different_parameter_initialization),
+    }
+
+    averaged_lstm_acc_different_parameter_initialization = []
+    for i in range(5):
+        print(f"####### LSTM {i}/5 #######")
+        lstm_acc = run_lstm(
+            train_data_loader_lstm, test_data_loader_lstm, num_epochs=30
+        )
+        averaged_lstm_acc_different_parameter_initialization.append(lstm_acc)
+    results["lstm"] = {
+        "mean": np.mean(averaged_lstm_acc_different_parameter_initialization),
+        "std": np.std(averaged_lstm_acc_different_parameter_initialization),
+    }
 
     averaged_snn_acc_different_parameter_initialization = []
     for i in range(5):

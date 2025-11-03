@@ -7,11 +7,10 @@ from .calculate_test_accuracy import calculate_test_accuracy
 
 preprocess_batches_lstm = lambda X_batch: X_batch.permute(1, 0, 2).contiguous()
 
-num_epochs = 30
 loss_function = nn.CrossEntropyLoss()
 
 
-def run_lstm(train_data_loader, test_data_loader):
+def run_lstm(train_data_loader, test_data_loader, num_epochs=30):
     model = LSTMClassifier(num_classes=HEIDELBERG_DATASET_NUMBER_CLASSES)
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
 
