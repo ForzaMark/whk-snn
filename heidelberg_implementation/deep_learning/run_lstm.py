@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from constants import HEIDELBERG_DATASET_NUMBER_CLASSES
 from neural_nets.lstm_classifier import LSTMClassifier
+from util.remove_training_from_memory import remove_training_from_memory
 
 from .calculate_test_accuracy import calculate_test_accuracy
 
@@ -34,5 +35,7 @@ def run_lstm(train_data_loader, test_data_loader, num_epochs=30):
         preprocess_batches=preprocess_batches_lstm,
         model=model,
     )
+
+    remove_training_from_memory(model, optimizer)
 
     return test_acc

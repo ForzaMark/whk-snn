@@ -3,6 +3,9 @@
 
 models
 heidelberg_implementation/eprop/datasets
+heidelberg_implementation/dataset
+tutorials/data/NMNIST
+heidelberg_implementation/data/NMNIST
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

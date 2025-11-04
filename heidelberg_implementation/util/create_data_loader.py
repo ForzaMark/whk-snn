@@ -9,19 +9,21 @@ from data.preprocessing_utils import (
 from tonic import datasets, transforms
 from torch.utils.data import DataLoader, Subset, TensorDataset
 
-create_frame_transform = lambda time_steps: transforms.ToFrame(
-    sensor_size=datasets.SHD.sensor_size, n_time_bins=time_steps
+create_frame_transform = lambda time_steps, dataset: transforms.ToFrame(
+    sensor_size=dataset.sensor_size, n_time_bins=time_steps
 )
 
 
 def create_data_loader(
+    dataset,
     time_steps=TIME_STEPS,
     use_train_subset: Union[bool, int] = False,
     batch_size=BATCH_SIZE,
 ):
-    frame_transform = create_frame_transform(time_steps=time_steps)
-    train_data = datasets.SHD("./data", transform=frame_transform, train=True)
-    test_data = datasets.SHD("./data", transform=frame_transform, train=False)
+    dataset_fn = getattr(datasets, dataset)
+    frame_transform = create_frame_transform(time_steps, dataset_fn)
+    train_data = dataset_fn("./data", transform=frame_transform, train=True)
+    test_data = dataset_fn("./data", transform=frame_transform, train=False)
 
     if use_train_subset:
         random_indices = torch.randperm(len(train_data))[:use_train_subset]

@@ -13,8 +13,8 @@ from training.pruning import (
 from util.calculate_loss import calculate_loss
 from util.compute_accuracy import compute_accuracy, compute_test_set_accuracy
 from util.compute_epoch_loss_per_time_step import compute_epoch_loss_per_time_step
-from util.create_data_loader import create_data_loader
 from util.early_stopping import EarlyStopping
+from util.remove_training_from_memory import remove_training_from_memory
 
 
 def calculate_gradient(optimizer, loss_val):
@@ -164,6 +164,8 @@ def train_snn(
 
     end = datetime.now()
     total_training_time = end - start
+
+    remove_training_from_memory(net, optimizer)
 
     return (
         training_acc_history,

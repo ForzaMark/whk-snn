@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from constants import HEIDELBERG_DATASET_NUMBER_CLASSES
 from neural_nets.cnn_classifier import CNN_Classifier
+from util.remove_training_from_memory import remove_training_from_memory
 
 from .calculate_test_accuracy import calculate_test_accuracy
 
@@ -38,5 +39,7 @@ def run_cnn(train_data_loader, test_data_loader, num_epochs=10):
         preprocess_batches=preprocess_batches,
         model=model,
     )
+
+    remove_training_from_memory(model, optimizer)
 
     return test_acc

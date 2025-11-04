@@ -66,7 +66,7 @@ if __name__ == "__main__":
     results = {}
 
     print("######### Loading data #########")
-    train_data_loader, test_data_loader = create_data_loader()
+    train_data_loader, test_data_loader = create_data_loader("SHD")
     train_data_loader_cnn, test_data_loader_cnn = create_data_loader_deep_models(
         mode="cnn"
     )
