@@ -85,8 +85,8 @@ if __name__ == "__main__":
     results["logistic_regression"] = logistic_regression_acc
 
     averaged_cnn_acc_different_parameter_initialization = []
-    for i in range(5):
-        print(f"####### CNN {i}/5 #######")
+    for i in range(3):
+        print(f"####### CNN {i}/3 #######")
         cnn_acc = run_cnn(train_data_loader_cnn, test_data_loader_cnn, num_epochs=30)
 
         averaged_cnn_acc_different_parameter_initialization.append(cnn_acc)
@@ -96,8 +96,8 @@ if __name__ == "__main__":
     }
 
     averaged_lstm_acc_different_parameter_initialization = []
-    for i in range(5):
-        print(f"####### LSTM {i}/5 #######")
+    for i in range(3):
+        print(f"####### LSTM {i}/3 #######")
         lstm_acc = run_lstm(
             train_data_loader_lstm, test_data_loader_lstm, num_epochs=30
         )
@@ -108,8 +108,8 @@ if __name__ == "__main__":
     }
 
     averaged_snn_acc_different_parameter_initialization = []
-    for i in range(5):
-        print(f"####### SNN {i}/5 #######")
+    for i in range(3):
+        print(f"####### SNN {i}/3 #######")
         snn_acc = run_snn(
             train_data_loader,
             test_data_loader,

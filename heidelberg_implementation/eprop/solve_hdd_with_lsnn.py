@@ -19,9 +19,7 @@ FLAGS = {
     "n_adaptive": 100,
 }
 
-dataset = HDD_Dataset(
-    FLAGS["batch"], data_path="./eprop/datasets/hdd/full_spiking_data/"
-)
+dataset = HDD_Dataset(FLAGS["batch"], data_path="../data/SHD/numpy_features/")
 n_in = dataset.n_features
 
 features = tf.placeholder(

@@ -67,7 +67,7 @@ tf.app.flags.DEFINE_float(
     "readout_decay", 1e-3, "weight decay of readout and broadcast weights 0.001"
 )
 
-dataset = HDD_Dataset(FLAGS.batch, data_path="./eprop/datasets/hdd/full_spiking_data/")
+dataset = HDD_Dataset(FLAGS.batch, data_path="../data/SHD/numpy_features/")
 
 features = tf.placeholder(
     shape=(None, None, dataset.n_features), dtype=tf.float32, name="Features"
