@@ -35,7 +35,7 @@ def train(
     time_steps,
 ):
     data = train_data.to_dense().to(torch.float32).squeeze().permute(1, 0, 2).to(DEVICE)
-    targets = train_targets.to(DEVICE)
+    targets = train_targets.to(DEVICE).long()
 
     spk_recs, mem_recs = net(data)
 
