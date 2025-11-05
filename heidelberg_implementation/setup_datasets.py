@@ -16,16 +16,12 @@ for dataset in datasets:
     first_x, first_y = next(iter(train_data_loader))
 
     first_x_np = first_x.squeeze().numpy()
-    first_y_np = np.array(first_y)
 
     path = f"../data/{dataset}/numpy_features"
     os.makedirs(path, exist_ok=True)
 
     shape_features = (len(train_data_loader.dataset),) + first_x_np.shape
     shape_labels = (len(train_data_loader.dataset),)
-
-    path = f"../data/{dataset}/numpy_features"
-    os.makedirs(path, exist_ok=True)
 
     features_mmap = open_memmap(
         f"{path}/train_features.npy", mode="w+", dtype="int8", shape=shape_features
@@ -37,12 +33,3 @@ for dataset in datasets:
     for i, (x, y) in enumerate(train_data_loader):
         features_mmap[i] = x.squeeze().numpy().astype("int8")
         labels_mmap[i] = np.array(y).astype("int8")
-
-    path = f"../data/{dataset}/numpy_features"
-    os.makedirs(path, exist_ok=True)
-
-    np.save(f"../data/{dataset}/numpy_features/test_features.npy", test_features)
-    np.save(f"../data/{dataset}/numpy_features/train_features.npy", train_features)
-    np.save(f"../data/{dataset}/numpy_features/test_labels.npy", test_labels)
-    np.save(f"../data/{dataset}/numpy_features/train_labels.npy", train_labels)
-    np.save(f"../data/{dataset}/numpy_features/train_labels.npy", train_labels)
