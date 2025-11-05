@@ -62,8 +62,8 @@ class Eprop_Dataset:
         feature_path = f"{path}_features.npy"
         label_path = f"{path}_labels.npy"
 
-        data_stack = np.load(feature_path)
-        label_stack = np.load(label_path)
+        data_stack = np.load(feature_path, mmap_mode="r")
+        label_stack = np.load(label_path, mmap_mode="r")
 
         return data_stack, label_stack
 

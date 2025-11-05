@@ -1,9 +1,11 @@
 import os
 
 import numpy as np
+from numpy.lib.format import open_memmap
 from util.create_data_loader import create_data_loader
 
-datasets = ["SHD", "NMNIST"]
+# datasets = ["SHD", "NMNIST", "DVSGesture"]
+datasets = ["SHD", "DVSGesture"]
 
 for dataset in datasets:
     print(dataset)
@@ -11,25 +13,30 @@ for dataset in datasets:
         dataset=dataset, time_steps=100, use_train_subset=False, batch_size=1
     )
 
+    first_x, first_y = next(iter(train_data_loader))
+
+    first_x_np = first_x.squeeze().numpy()
+    first_y_np = np.array(first_y)
+
     path = f"../data/{dataset}/numpy_features"
     os.makedirs(path, exist_ok=True)
 
-    first_x, first_y = next(iter(train_data_loader))
+    shape_features = (len(train_data_loader.dataset),) + first_x_np.shape
+    shape_labels = (len(train_data_loader.dataset),)
 
-    shape = (len(train_data_loader.dataset),) + first_x.squeeze().shape
-    features_mmap = np.memmap(
-        f"{path}/train_features.npy", dtype="float32", mode="w+", shape=shape
+    path = f"../data/{dataset}/numpy_features"
+    os.makedirs(path, exist_ok=True)
+
+    features_mmap = open_memmap(
+        f"{path}/train_features.npy", mode="w+", dtype="int8", shape=shape_features
     )
-    labels_mmap = np.memmap(
-        f"{path}/train_labels.npy",
-        dtype="int64",
-        mode="w+",
-        shape=(len(train_data_loader.dataset),),
+    labels_mmap = open_memmap(
+        f"{path}/train_labels.npy", mode="w+", dtype="int8", shape=shape_labels
     )
 
     for i, (x, y) in enumerate(train_data_loader):
-        features_mmap[i] = x.squeeze().numpy()
-        labels_mmap[i] = y.item()
+        features_mmap[i] = x.squeeze().numpy().astype("int8")
+        labels_mmap[i] = np.array(y).astype("int8")
 
     features_mmap.flush()
     labels_mmap.flush()
