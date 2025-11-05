@@ -38,5 +38,11 @@ for dataset in datasets:
         features_mmap[i] = x.squeeze().numpy().astype("int8")
         labels_mmap[i] = np.array(y).astype("int8")
 
-    features_mmap.flush()
-    labels_mmap.flush()
+    path = f"../data/{dataset}/numpy_features"
+    os.makedirs(path, exist_ok=True)
+
+    np.save(f"../data/{dataset}/numpy_features/test_features.npy", test_features)
+    np.save(f"../data/{dataset}/numpy_features/train_features.npy", train_features)
+    np.save(f"../data/{dataset}/numpy_features/test_labels.npy", test_labels)
+    np.save(f"../data/{dataset}/numpy_features/train_labels.npy", train_labels)
+    np.save(f"../data/{dataset}/numpy_features/train_labels.npy", train_labels)
