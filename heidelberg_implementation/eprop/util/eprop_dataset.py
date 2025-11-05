@@ -26,13 +26,15 @@ def split_train_validation(feature_stack_train, label_stack_train):
     )
 
 
-class HDD_Dataset:
-    def __init__(self, n_mini_batch, data_path, epsilon=1e-10):
+class Eprop_Dataset:
+    def __init__(
+        self, n_mini_batch, data_path, epsilon=1e-10, n_features=700, n_classes=20
+    ):
         self.data_path = data_path
         self.epsilon = epsilon
 
-        self.n_features = 700
-        self.n_classes = 20
+        self.n_features = n_features
+        self.n_classes = n_classes
 
         (
             self.feature_stack_train,
@@ -49,8 +51,6 @@ class HDD_Dataset:
         self.n_train = len(self.feature_stack_train)
         self.n_validation = len(self.feature_stack_validation)
         self.n_test = len(self.feature_stack_test)
-
-        print("Dataset sizes: test {} \t train {} \t".format(self.n_test, self.n_train))
 
         self.mini_batch_indices = self.generate_mini_batch_selection_list()
         self.current_epoch = 0

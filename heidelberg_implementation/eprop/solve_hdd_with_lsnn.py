@@ -3,8 +3,8 @@ import numpy.random as rd
 import tensorflow as tf
 
 from .util.configuration import FLAGS
+from .util.eprop_dataset import Eprop_Dataset
 from .util.get_cell import get_cell
-from .util.hdd_dataset import HDD_Dataset
 from .util.rate_coding_loss_last_output import rate_coding_loss_last_output
 
 N_EPOCHS = 30
@@ -19,7 +19,7 @@ FLAGS = {
     "n_adaptive": 100,
 }
 
-dataset = HDD_Dataset(FLAGS["batch"], data_path="../data/SHD/numpy_features/")
+dataset = Eprop_Dataset(FLAGS["batch"], data_path="../data/SHD/numpy_features/")
 n_in = dataset.n_features
 
 features = tf.placeholder(

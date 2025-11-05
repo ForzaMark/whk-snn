@@ -2,7 +2,7 @@ import numpy as np
 import numpy.random as rd
 import tensorflow as tf
 
-from .util.hdd_dataset import HDD_Dataset
+from .util.eprop_dataset import Eprop_Dataset
 from .util.lstm_eprop_model import CustomLSTM
 
 FLAGS = tf.app.flags.FLAGS
@@ -67,7 +67,7 @@ tf.app.flags.DEFINE_float(
     "readout_decay", 1e-3, "weight decay of readout and broadcast weights 0.001"
 )
 
-dataset = HDD_Dataset(FLAGS.batch, data_path="../data/SHD/numpy_features/")
+dataset = Eprop_Dataset(FLAGS.batch, data_path="../data/SHD/numpy_features/")
 
 features = tf.placeholder(
     shape=(None, None, dataset.n_features), dtype=tf.float32, name="Features"

@@ -1,4 +1,4 @@
-# TODO: how to portability
+import time
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,7 +9,7 @@ from eprop.solve_hdd_with_lstm import run_eprop_lstm
 from machine_learning.run_logistic_regression import run_logistic_regression
 from machine_learning.run_svm import run_svm
 from spiking_neural_networks.run_snn import run_snn
-from util.create_data_loader import create_data_loader, create_data_loader_deep_models
+from util.get_datasets import get_shd_dataset
 
 
 def plot_model_results(results, save_path="./output/experiment_all_methods/result.jpg"):
@@ -62,17 +62,31 @@ def plot_model_results(results, save_path="./output/experiment_all_methods/resul
     plt.show()
 
 
+def print_elapsed_time(start, end):
+
+    elapsed = end - start
+
+    hours = int(elapsed // 3600)
+    minutes = int((elapsed % 3600) // 60)
+    seconds = elapsed % 60
+
+    print(f"Elapsed time: {hours}h {minutes}m {seconds:.2f}s")
+
+
 if __name__ == "__main__":
+    start = time.time()
     results = {}
 
     print("######### Loading data #########")
-    train_data_loader, test_data_loader = create_data_loader("SHD")
-    train_data_loader_cnn, test_data_loader_cnn = create_data_loader_deep_models(
-        mode="cnn"
-    )
-    train_data_loader_lstm, test_data_loader_lstm = create_data_loader_deep_models(
-        mode="lstm"
-    )
+    (
+        train_data_loader,
+        test_data_loader,
+        train_data_loader_cnn,
+        test_data_loader_cnn,
+        train_data_loader_lstm,
+        test_data_loader_lstm,
+        eprop_heidelberg_dataset,
+    ) = get_shd_dataset()
 
     print("######### SVM #########")
     svm_acc = run_svm(train_data_loader, test_data_loader)
@@ -117,7 +131,7 @@ if __name__ == "__main__":
             number_hidden_layer=2,
             beta=0.99,
             threshold=1,
-            num_epochs=30,
+            num_epochs="early_stopping",
         )
         averaged_snn_acc_different_parameter_initialization.append(snn_acc)
     snn_key = f"snn\n2 layer\n3000 neurons"
@@ -137,3 +151,6 @@ if __name__ == "__main__":
     print("Results", results)
 
     plot_model_results(results)
+    end = time.time()
+
+    print_elapsed_time(start, end)
