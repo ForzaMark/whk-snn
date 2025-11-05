@@ -57,7 +57,7 @@ class Eprop_Dataset:
         self.index_current_minibatch = 0
 
     def load_data_stack(self, dataset):
-        path = f"{self.data_path}hdd_{dataset}"
+        path = f"{self.data_path}{dataset}"
 
         feature_path = f"{path}_features.npy"
         label_path = f"{path}_labels.npy"
