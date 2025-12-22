@@ -1,11 +1,24 @@
+# FIXME: this import fix is needed for compatibility reasons
+#        between the necessary pytorch and tensorflow versions
+try:
+    import importlib.metadata as importlib_metadata
+
+except ModuleNotFoundError:
+    import sys
+
+    import importlib_metadata
+
+    sys.modules["importlib.metadata"] = importlib_metadata
+
 import time
 
 import matplotlib.pyplot as plt
 import numpy as np
 from deep_learning.run_cnn import run_cnn
 from deep_learning.run_lstm import run_lstm
-from eprop.solve_hdd_with_lsnn import run_eprop_lsnn
-from eprop.solve_hdd_with_lstm import run_eprop_lstm
+
+# from eprop.solve_hdd_with_lsnn import run_eprop_lsnn
+# from eprop.solve_hdd_with_lstm import run_eprop_lstm
 from machine_learning.run_logistic_regression import run_logistic_regression
 from machine_learning.run_svm import run_svm
 from spiking_neural_networks.run_snn import run_snn
@@ -85,7 +98,6 @@ if __name__ == "__main__":
         test_data_loader_cnn,
         train_data_loader_lstm,
         test_data_loader_lstm,
-        eprop_dataset,
     ) = get_nmnist_dataset()
 
     print("######### SVM #########")
@@ -142,13 +154,13 @@ if __name__ == "__main__":
         "std": np.std(averaged_snn_acc_different_parameter_initialization),
     }
 
-    print("######### E-Prop LSNN #########")
-    eprop_lsnn_acc = run_eprop_lsnn()
-    results["eprop_lsnn"] = eprop_lsnn_acc
+    # print("######### E-Prop LSNN #########")
+    # eprop_lsnn_acc = run_eprop_lsnn()
+    # results["eprop_lsnn"] = eprop_lsnn_acc
 
-    print("######### E-Prop LSTM #########")
-    eprop_lstm_acc = run_eprop_lstm()
-    results["eprop_lstm"] = eprop_lstm_acc
+    # print("######### E-Prop LSTM #########")
+    # eprop_lstm_acc = run_eprop_lstm()
+    # results["eprop_lstm"] = eprop_lstm_acc
 
     print("Results", results)
 

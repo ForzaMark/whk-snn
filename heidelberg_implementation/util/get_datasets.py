@@ -64,13 +64,6 @@ def get_nmnist_dataset(use_train_subset: Union[bool, int] = False):
         max_timestep=max_timestep,
     )
 
-    eprop_nmnist_dataset = Eprop_Dataset(
-        32,
-        data_path="../data/NMNIST/numpy_features/",
-        n_classes=20,
-        n_features=number_input_neurons,
-    )
-
     return (
         train_data_loader,
         test_data_loader,
@@ -78,5 +71,4 @@ def get_nmnist_dataset(use_train_subset: Union[bool, int] = False):
         test_data_loader_cnn,
         train_data_loader_lstm,
         test_data_loader_lstm,
-        eprop_nmnist_dataset,
     )
