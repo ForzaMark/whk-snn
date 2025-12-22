@@ -3,12 +3,12 @@ from collections import Counter
 import numpy as np
 
 
-def bin_features_into_64_space_bins(time_binned_sequences):
+def bin_features_into_64_space_bins(time_binned_sequences, number_input_neurons=700):
     space_binned_sequences = []
     for sequence in time_binned_sequences:
         space_binned_sequence = []
         for neurons in sequence:
-            assert len(neurons) == 700
+            assert len(neurons) == number_input_neurons
 
             bins = np.array_split(neurons, 64)
 
@@ -21,7 +21,9 @@ def bin_features_into_64_space_bins(time_binned_sequences):
     return np.array(space_binned_sequences)
 
 
-def convert_to_time_binned_sequences(data):
+def convert_to_time_binned_sequences(
+    data, max_timestep=1400000, number_input_neurons=700
+):
     X = []
     Y = []
 
@@ -29,12 +31,12 @@ def convert_to_time_binned_sequences(data):
         sequences = []
         current_i = 0
 
-        while current_i < 1400000:
+        while current_i < max_timestep:
             filtered_spikes = spikes[
                 (spikes["t"] > current_i) & (spikes["t"] <= current_i + 10000)
             ]
 
-            sequence = np.zeros(700)
+            sequence = np.zeros(number_input_neurons)
             for neuron, count in Counter(filtered_spikes["x"]).items():
                 sequence[neuron] = count
 

@@ -4,8 +4,7 @@ import numpy as np
 from numpy.lib.format import open_memmap
 from util.create_data_loader import create_data_loader
 
-# datasets = ["SHD", "NMNIST", "DVSGesture"]
-datasets = ["SHD"]
+datasets = ["SHD", "NMNIST"]
 
 for dataset in datasets:
     print(dataset)

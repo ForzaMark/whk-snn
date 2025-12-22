@@ -31,3 +31,7 @@ def nmnist_transform(time_steps, custom_sensor_size):
             convert_to_spikes,
         ]
     )
+
+
+def nmnist_deep_model_transform():
+    return transforms.Compose([keep_polarity_zero, multiply_x_y])

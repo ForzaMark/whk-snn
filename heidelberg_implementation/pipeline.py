@@ -9,7 +9,7 @@ from eprop.solve_hdd_with_lstm import run_eprop_lstm
 from machine_learning.run_logistic_regression import run_logistic_regression
 from machine_learning.run_svm import run_svm
 from spiking_neural_networks.run_snn import run_snn
-from util.get_datasets import get_shd_dataset
+from util.get_datasets import get_nmnist_dataset
 
 
 def plot_model_results(results, save_path="./output/experiment_all_methods/result.jpg"):
@@ -85,8 +85,8 @@ if __name__ == "__main__":
         test_data_loader_cnn,
         train_data_loader_lstm,
         test_data_loader_lstm,
-        eprop_heidelberg_dataset,
-    ) = get_shd_dataset()
+        eprop_dataset,
+    ) = get_nmnist_dataset()
 
     print("######### SVM #########")
     svm_acc = run_svm(train_data_loader, test_data_loader)
@@ -128,6 +128,8 @@ if __name__ == "__main__":
             train_data_loader,
             test_data_loader,
             number_hidden_neurons=3000,
+            number_input_neurons=1156,
+            number_output_neurons=20,
             number_hidden_layer=2,
             beta=0.99,
             threshold=1,

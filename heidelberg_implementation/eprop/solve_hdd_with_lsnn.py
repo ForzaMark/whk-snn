@@ -19,7 +19,12 @@ FLAGS = {
     "n_adaptive": 100,
 }
 
-dataset = Eprop_Dataset(FLAGS["batch"], data_path="../data/SHD/numpy_features/")
+dataset = Eprop_Dataset(
+    32,
+    data_path="../data/NMNIST/numpy_features/",
+    n_classes=20,
+    n_features=1156,
+)
 n_in = dataset.n_features
 
 features = tf.placeholder(

@@ -67,7 +67,12 @@ tf.app.flags.DEFINE_float(
     "readout_decay", 1e-3, "weight decay of readout and broadcast weights 0.001"
 )
 
-dataset = Eprop_Dataset(FLAGS.batch, data_path="../data/SHD/numpy_features/")
+dataset = Eprop_Dataset(
+    32,
+    data_path="../data/NMNIST/numpy_features/",
+    n_classes=20,
+    n_features=1156,
+)
 
 features = tf.placeholder(
     shape=(None, None, dataset.n_features), dtype=tf.float32, name="Features"

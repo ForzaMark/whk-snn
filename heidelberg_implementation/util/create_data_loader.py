@@ -50,20 +50,28 @@ def data_loader_factory(X, Y, batch_size=32):
     return loader
 
 
-def create_data_loader_deep_models(mode, use_train_subset=None):
-    train_data = datasets.SHD("../data", train=True)
-    test_data = datasets.SHD("../data", train=False)
-
+def create_data_loader_deep_models(
+    mode,
+    use_train_subset=None,
+    train_data=datasets.SHD("../data", train=True),
+    test_data=datasets.SHD("../data", train=False),
+    max_timestep=1400000,
+    number_input_neurons=700,
+):
     if use_train_subset:
         random_indices = torch.randperm(len(train_data))[:use_train_subset]
         train_data = Subset(train_data, random_indices)
 
-    x_train, y_train = convert_to_time_binned_sequences(train_data)
-    x_test, y_test = convert_to_time_binned_sequences(test_data)
+    x_train, y_train = convert_to_time_binned_sequences(
+        train_data, max_timestep, number_input_neurons
+    )
+    x_test, y_test = convert_to_time_binned_sequences(
+        test_data, max_timestep, number_input_neurons
+    )
 
     if mode == "cnn":
-        x_train = bin_features_into_64_space_bins(x_train)
-        x_test = bin_features_into_64_space_bins(x_test)
+        x_train = bin_features_into_64_space_bins(x_train, number_input_neurons)
+        x_test = bin_features_into_64_space_bins(x_test, number_input_neurons)
 
     batch_size = BATCH_SIZE if mode == "lstm" else 1
     train_loader = data_loader_factory(x_train, y_train, batch_size=batch_size)
