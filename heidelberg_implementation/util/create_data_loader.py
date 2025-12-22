@@ -4,6 +4,7 @@ import torch
 from constants import BATCH_SIZE, TIME_STEPS
 from tonic import datasets, transforms
 from torch.utils.data import DataLoader, Subset, TensorDataset
+from util.nmnist_transform import nmnist_transform
 from util.preprocessing_utils import (
     bin_features_into_64_space_bins,
     convert_to_time_binned_sequences,
@@ -21,7 +22,11 @@ def create_data_loader(
     batch_size=BATCH_SIZE,
 ):
     dataset_fn = getattr(datasets, dataset)
-    frame_transform = create_frame_transform(time_steps, dataset_fn)
+    frame_transform = (
+        nmnist_transform(time_steps, ((34 * 34), 1, 1))
+        if dataset == "NMNIST"
+        else create_frame_transform(time_steps, dataset_fn)
+    )
     train_data = dataset_fn("../data", transform=frame_transform, train=True)
     test_data = dataset_fn("../data", transform=frame_transform, train=False)
 

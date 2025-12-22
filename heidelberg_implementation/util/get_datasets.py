@@ -30,21 +30,12 @@ def get_shd_dataset(use_train_subset: Union[bool, int] = False):
     )
 
 
-def get_nmnist(use_train_subset=False):
-    train_data_loader, test_data_loader = create_data_loader("NMNIST")
-
-    raise NotImplementedError(
-        "Number of NMNIST features per timestep need to be specified"
-    )
-    eprop_nmnist_dataset = Eprop_Dataset(
-        32, data_path="../data/NMNIST/numpy_features/", n_features=None, n_classes=10
+def get_nmnist_dataset(use_train_subset: Union[bool, int] = False):
+    train_data_loader, test_data_loader = create_data_loader(
+        "NMNIST", use_train_subset=use_train_subset
     )
 
     return (
-        train_data_loader,
-        test_data_loader,
-        train_data_loader,
-        test_data_loader,
         train_data_loader,
         test_data_loader,
     )

@@ -12,11 +12,13 @@ def run_snn(
     beta,
     threshold,
     num_epochs,
+    number_input_neurons=NUMBER_INPUT_NEURONS,
+    number_output_neurons=NUMBER_OUTPUT_NEURONS,
 ):
     model = ConfigurableSpikingNeuralNet(
-        number_input_neurons=NUMBER_INPUT_NEURONS,
+        number_input_neurons=number_input_neurons,
         number_hidden_neurons=number_hidden_neurons,
-        number_output_neurons=NUMBER_OUTPUT_NEURONS,
+        number_output_neurons=number_output_neurons,
         beta=beta,
         threshold=threshold,
         time_steps=TIME_STEPS,

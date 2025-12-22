@@ -123,4 +123,3 @@ class Eprop_Dataset:
 
     def get_next_validation_batch(self, selection):
         return self.load_features("validation", selection=selection)
-        return self.load_features("validation", selection=selection)
